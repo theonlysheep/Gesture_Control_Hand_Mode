@@ -160,11 +160,10 @@ namespace streams.cs
             manager.DeviceInfo = GetCheckedDevice();
 
             streams.ConfigureStreams();
-
-            //handsRecognition.ActivatedGestures = GetSelectedGestures();
+            
             handsRecognition.SetUpHandModule();
-            //handsRecognition.EnableGesturesFromSelection();
-
+            handsRecognition.RegisterHandEvents();
+            
             PopulateGestureList();
 
             manager.InitSenseManager();

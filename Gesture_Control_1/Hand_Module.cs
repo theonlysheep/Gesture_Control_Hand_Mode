@@ -43,7 +43,7 @@ namespace streams.cs
         }
 
         #region Events 
-        /*
+        
         public void OnFiredAlert(Object sender, HandConfiguration.AlertEventArgs args)
         {
             AlertData data = args.data;
@@ -51,24 +51,24 @@ namespace streams.cs
             form.UpdateGestureInfo("Frame " + data.frameNumber + ") " + sAlert + data.label.ToString() + "\n", System.Drawing.Color.RoyalBlue);
         }
 
-        public void OnFiredGesture(Object sender, HandConfiguration.AlertEventArgs args)
+        public void OnFiredGesture(Object sender, HandConfiguration.GestureEventArgs args)
         {
             GestureData data = args.data;
             string gestureStatusLeft = string.Empty;
             string gestureStatusRight = string.Empty;
 
-            ICursor cursor;
-            if (cursorData.QueryCursorDataById(data.handId, out cursor) != Status.STATUS_NO_ERROR)
+            IHand hand;
+            if (handData.QueryHandDataById(data.handId, out hand) != Status.STATUS_NO_ERROR)
                 return;
-            BodySideType bodySideType = cursor.BodySide;
+            BodySideType bodySideType = hand.BodySide;
 
             if (bodySideType == BodySideType.BODY_SIDE_LEFT)
             {
-                gestureStatusLeft += "Left Hand Gesture: " + data.label.ToString();
+                gestureStatusLeft += "Left Hand Gesture: " + data.name;
             }
             else if (bodySideType == BodySideType.BODY_SIDE_RIGHT)
             {
-                gestureStatusRight += "Right Hand Gesture: " + data.label.ToString();
+                gestureStatusRight += "Right Hand Gesture: " + data.name;
             }
 
             if (gestureStatusLeft == String.Empty)
@@ -76,7 +76,7 @@ namespace streams.cs
             else
                 form.UpdateGestureInfo("Frame " + data.frameNumber + ") " + gestureStatusLeft + ", " + gestureStatusRight + "\n", System.Drawing.Color.SeaGreen);
         }
-        */
+        
 
         public static Status OnNewFrame(Int32 mid, Base module, Sample sample)
         {
@@ -164,7 +164,7 @@ namespace streams.cs
                     DisplayPicture(sample.Depth, handData);
                     DisplayGesture(handData, frameNumber);
                     DisplayJoints(handData);
-                    DisplayAlerts(handData, frameNumber);
+                    //DisplayAlerts(handData, frameNumber);
                 }
                 form.UpdateResultImage();
             }
@@ -175,8 +175,8 @@ namespace streams.cs
         {
             if (HandConfiguration != null)
             {
-                //HandConfiguration.AlertFired += OnFiredAlert;
-                //HandConfiguration.GestureFired += OnFiredGesture;                
+                HandConfiguration.AlertFired += OnFiredAlert;
+                HandConfiguration.GestureFired += OnFiredGesture;                
                 HandConfiguration.ApplyChanges();
             }
         }
@@ -433,67 +433,67 @@ namespace streams.cs
             }
         }
 
-        private void DisplayAlerts(HandData handAnalysis, int frameNumber)
-        {
-            bool isChanged = false;
-            string sAlert = "Alert: ";
-            if (handAnalysis.FiredAlertData != null)
-                for (int i = 0; i < handAnalysis.FiredAlertData.Length; i++)
-                {
+        //private void DisplayAlerts(HandData handAnalysis, int frameNumber)
+        //{
+        //    bool isChanged = false;
+        //    string sAlert = "Alert: ";
+        //    if (handAnalysis.FiredAlertData != null)
+        //        for (int i = 0; i < handAnalysis.FiredAlertData.Length; i++)
+        //        {
 
-                    //See HandAnalysis.AlertData.AlertType for all available alerts
-                    switch (handAnalysis.FiredAlertData[i].label)
-                    {
-                        case AlertType.ALERT_HAND_DETECTED:
-                            {
+        //            //See HandAnalysis.AlertData.AlertType for all available alerts
+        //            switch (handAnalysis.FiredAlertData[i].label)
+        //            {
+        //                case AlertType.ALERT_HAND_DETECTED:
+        //                    {
 
-                                sAlert += "Hand Detected, ";
-                                isChanged = true;
-                                break;
-                            }
-                        case AlertType.ALERT_HAND_NOT_DETECTED:
-                            {
+        //                        sAlert += "Hand Detected, ";
+        //                        isChanged = true;
+        //                        break;
+        //                    }
+        //                case AlertType.ALERT_HAND_NOT_DETECTED:
+        //                    {
 
-                                sAlert += "Hand Not Detected, ";
-                                isChanged = true;
-                                break;
-                            }
-                        case AlertType.ALERT_HAND_CALIBRATED:
-                            {
+        //                        sAlert += "Hand Not Detected, ";
+        //                        isChanged = true;
+        //                        break;
+        //                    }
+        //                case AlertType.ALERT_HAND_CALIBRATED:
+        //                    {
 
-                                sAlert += "Hand Calibrated, ";
-                                isChanged = true;
-                                break;
-                            }
-                        case AlertType.ALERT_HAND_NOT_CALIBRATED:
-                            {
+        //                        sAlert += "Hand Calibrated, ";
+        //                        isChanged = true;
+        //                        break;
+        //                    }
+        //                case AlertType.ALERT_HAND_NOT_CALIBRATED:
+        //                    {
 
-                                sAlert += "Hand Not Calibrated, ";
-                                isChanged = true;
-                                break;
-                            }
-                        case AlertType.ALERT_HAND_INSIDE_BORDERS:
-                            {
+        //                        sAlert += "Hand Not Calibrated, ";
+        //                        isChanged = true;
+        //                        break;
+        //                    }
+        //                case AlertType.ALERT_HAND_INSIDE_BORDERS:
+        //                    {
 
-                                sAlert += "Hand Inside Border, ";
-                                isChanged = true;
-                                break;
-                            }
-                        case AlertType.ALERT_HAND_OUT_OF_BORDERS:
-                            {
+        //                        sAlert += "Hand Inside Border, ";
+        //                        isChanged = true;
+        //                        break;
+        //                    }
+        //                case AlertType.ALERT_HAND_OUT_OF_BORDERS:
+        //                    {
 
-                                sAlert += "Hand Out Of Borders, ";
-                                isChanged = true;
-                                break;
-                            }
+        //                        sAlert += "Hand Out Of Borders, ";
+        //                        isChanged = true;
+        //                        break;
+        //                    }
 
-                    }
-                }
-            if (isChanged)
-            {
-                form.UpdateGestureInfo("Frame " + frameNumber + ") " + sAlert + "\n", System.Drawing.Color.RoyalBlue);
-            }
-        }
+        //            }
+        //        }
+        //    if (isChanged)
+        //    {
+        //        form.UpdateGestureInfo("Frame " + frameNumber + ") " + sAlert + "\n", System.Drawing.Color.RoyalBlue);
+        //    }
+        //}
 
     }
 }
