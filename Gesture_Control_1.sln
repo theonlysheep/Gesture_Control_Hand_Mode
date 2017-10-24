@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gesture_Control_1", "Gesture_Control_1\Gesture_Control_1.csproj", "{C630640E-5DA5-4ED1-8895-83B1D5432347}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gesture_Control_Hand_Mode", "Gesture_Control_1\Gesture_Control_Hand_Mode.csproj", "{C630640E-5DA5-4ED1-8895-83B1D5432347}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
