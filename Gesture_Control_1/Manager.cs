@@ -15,6 +15,7 @@ namespace streams.cs
         public RS.SenseManager SenseManager { get; set; }
         public RS.DeviceInfo DeviceInfo { get; set; }
         public Timer timer;
+        public RS.SampleReader sampleReader { get; set; }
 
         public bool Stop { get; set; }
 
@@ -145,6 +146,22 @@ namespace streams.cs
             if (device != null) return device.DepthSensorRange.max;
 
             else return -1;
+        }
+        
+        private void OnSampleArrived(object sender, RS.SampleArrivedEventArgs args)
+        {
+
+            // work on sample.color
+
+        }
+
+        public void ActivateSampleReader()
+        {
+            sampleReader = RS.SampleReader.Activate(SenseManager);
+
+            // Register Events 
+            sampleReader.SampleArrived += OnSampleArrived;
+            
         }
     }
 }

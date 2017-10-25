@@ -43,7 +43,7 @@ namespace streams.cs
         }
 
         #region Events 
-        
+
         public void OnFiredAlert(Object sender, HandConfiguration.AlertEventArgs args)
         {
             AlertData data = args.data;
@@ -76,7 +76,7 @@ namespace streams.cs
             else
                 form.UpdateGestureInfo("Frame " + data.frameNumber + ") " + gestureStatusLeft + ", " + gestureStatusRight + "\n", System.Drawing.Color.SeaGreen);
         }
-        
+
 
         public static Status OnNewFrame(Int32 mid, Base module, Sample sample)
         {
@@ -170,17 +170,17 @@ namespace streams.cs
             }
         }
 
-        
+
         public void RegisterHandEvents()
         {
             if (HandConfiguration != null)
             {
                 HandConfiguration.AlertFired += OnFiredAlert;
-                HandConfiguration.GestureFired += OnFiredGesture;                
-                HandConfiguration.ApplyChanges();
+                HandConfiguration.GestureFired += OnFiredGesture;
+                HandConfiguration.ApplyChanges();               
             }
         }
-        
+       
 
         public void EnableGesturesFromSelection()
         {

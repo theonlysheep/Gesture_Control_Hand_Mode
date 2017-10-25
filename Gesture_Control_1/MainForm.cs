@@ -158,7 +158,7 @@ namespace streams.cs
             manager.Stop = false;
 
             manager.DeviceInfo = GetCheckedDevice();
-
+            manager.ActivateSampleReader();
             streams.ConfigureStreams();
             
             handsRecognition.SetUpHandModule();
@@ -167,6 +167,7 @@ namespace streams.cs
             PopulateGestureList();
 
             manager.InitSenseManager();
+            
 
             // Thread for Streaming 
             System.Threading.Thread thread1 = new System.Threading.Thread(DoWork);

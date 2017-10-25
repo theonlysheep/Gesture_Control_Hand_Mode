@@ -30,10 +30,10 @@ namespace streams.cs
 
         public void ConfigureStreams()
         {
-            RS.SampleReader sampleReader = RS.SampleReader.Activate(manager.SenseManager);
-            sampleReader.EnableStream(RS.StreamType.STREAM_TYPE_COLOR, 1920, 1080, 30);
-            sampleReader.EnableStream(RS.StreamType.STREAM_TYPE_DEPTH, 640, 480, 60);
-            sampleReader.EnableStream(RS.StreamType.STREAM_TYPE_IR, 640, 480, 60);
+            
+            manager.sampleReader.EnableStream(RS.StreamType.STREAM_TYPE_COLOR, 1920, 1080, 30);
+            manager.sampleReader.EnableStream(RS.StreamType.STREAM_TYPE_DEPTH, 640, 480, 60);
+            manager.sampleReader.EnableStream(RS.StreamType.STREAM_TYPE_IR, 640, 480, 60);
         }
 
         public void RenderStreams(RS.Sample sample)
