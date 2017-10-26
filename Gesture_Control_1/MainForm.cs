@@ -86,8 +86,7 @@ namespace streams.cs
 
             // Initialise Intel Realsense Components
             manager.CreateSession();
-            manager.CreateSenseManager();
-            manager.CreateTimer();
+            manager.CreateSenseManager();            
         }
 
         // Get entries for Device Menue 
@@ -151,24 +150,25 @@ namespace streams.cs
             menuStrip.Enabled = false;
             buttonStart.Enabled = false;
             buttonStop.Enabled = true;
-
-
+            
             // Reset all components
             manager.DeviceInfo = null;
             manager.Stop = false;
 
+            //Get selected Camera
             manager.DeviceInfo = GetCheckedDevice();
+
+            // Setup processing Pipeline
             manager.ActivateSampleReader();
-            streams.ConfigureStreams();
-            
+            streams.ConfigureStreams();            
             handsRecognition.SetUpHandModule();
             handsRecognition.RegisterHandEvents();
             
             PopulateGestureList();
 
+            // Initialise Processing Pipeline 
             manager.InitSenseManager();
             
-
             // Thread for Streaming 
             System.Threading.Thread thread1 = new System.Threading.Thread(DoWork);
             thread1.Start();
@@ -184,10 +184,10 @@ namespace streams.cs
                 while (!manager.Stop)
                 {
                     RS.Sample sample = manager.GetSample();
-                    manager.FrameNumber++;
-                    streams.RenderStreams(sample);
-                    //manager.ShowPerformanceTick();
-                    handsRecognition.RecogniseHands(sample); //Todo
+                    manager.FrameNumber++;                    
+                    
+                    handsRecognition.RecogniseHands(sample);
+                    streams.RenderStreams(sample); // After Hands Recognition Since Hands recognition takes longer 
                     manager.SenseManager.ReleaseFrame();
                 }
 

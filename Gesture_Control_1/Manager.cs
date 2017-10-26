@@ -16,12 +16,11 @@ namespace streams.cs
         public RS.DeviceInfo DeviceInfo { get; set; }
         public Timer timer;
         public RS.SampleReader sampleReader { get; set; }
-
+        public int FrameNumber { get; set; }
         public bool Stop { get; set; }
 
         public event EventHandler<UpdateStatusEventArgs> UpdateStatus = null;
-        
-        public int FrameNumber{ get; set; }
+                
 
         /*
          * Manage Session and SenseManager in central class
@@ -83,26 +82,7 @@ namespace streams.cs
                 MessageBox.Show(null, e.ToString(), "Can not dispose SenseManager", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-        public void CreateTimer()
-        {
-            /* Timer Initialization */
-            timer = new Timer();
-
-        }
-
-
-        //public void ShowPerformanceTick()
-        //{
-        //    /* Optional: Show performance tick */
-
-        //    if (image != null)
-        //    {
-        //        timer.Tick(RS.ImageExtension.PixelFormatToString(image.Info.format) + " " + image.Info.width + "x" + image.Info.height);
-        //    }
-        //}
-
-
+       
         public void InitSenseManager()
         {
             if (SenseManager.Init() == RS.Status.STATUS_NO_ERROR)
@@ -127,9 +107,10 @@ namespace streams.cs
 
         public RS.Sample GetSample()
         {
+
             RS.Sample sample = null;
             /* Wait until a frame is ready: Synchronized or Asynchronous */
-            if (SenseManager.AcquireFrame(false) == RS.Status.STATUS_NO_ERROR)
+            if (SenseManager.AcquireFrame(true) == RS.Status.STATUS_NO_ERROR)
             {
                 /* Aquire Frame from Camera */
                 sample = SenseManager.Sample;
@@ -148,19 +129,9 @@ namespace streams.cs
             else return -1;
         }
         
-        private void OnSampleArrived(object sender, RS.SampleArrivedEventArgs args)
-        {
-
-            // work on sample.color
-
-        }
-
         public void ActivateSampleReader()
         {
             sampleReader = RS.SampleReader.Activate(SenseManager);
-
-            // Register Events 
-            sampleReader.SampleArrived += OnSampleArrived;
             
         }
     }

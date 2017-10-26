@@ -12,6 +12,8 @@ namespace streams.cs
         private HandModule handModule = null;
         public HandConfiguration HandConfiguration { get; set; } = null;
         private HandData handData = null;
+        private AlertData previousAlertData = null;
+        private GestureData previousGestureData = null;
 
         private readonly Queue<Image> _mImages;
         private const int NumberOfFramesToDelay = 3;
@@ -47,8 +49,17 @@ namespace streams.cs
         public void OnFiredAlert(Object sender, HandConfiguration.AlertEventArgs args)
         {
             AlertData data = args.data;
-            string sAlert = "Alert: ";
-            form.UpdateGestureInfo("Frame " + data.frameNumber + ") " + sAlert + data.label.ToString() + "\n", System.Drawing.Color.RoyalBlue);
+            if (previousAlertData == null)
+            {
+                previousAlertData = data;
+            }
+            // Limit Alert Output to UI
+            if (previousAlertData.label != data.label && previousAlertData.frameNumber != data.frameNumber)
+            {
+                string sAlert = "Alert: ";
+                form.UpdateGestureInfo("Frame " + data.frameNumber + ") " + sAlert + data.label.ToString() + "\n", System.Drawing.Color.RoyalBlue);
+                previousAlertData = data;
+            }
         }
 
         public void OnFiredGesture(Object sender, HandConfiguration.GestureEventArgs args)
@@ -57,24 +68,43 @@ namespace streams.cs
             string gestureStatusLeft = string.Empty;
             string gestureStatusRight = string.Empty;
 
-            IHand hand;
-            if (handData.QueryHandDataById(data.handId, out hand) != Status.STATUS_NO_ERROR)
-                return;
-            BodySideType bodySideType = hand.BodySide;
-
-            if (bodySideType == BodySideType.BODY_SIDE_LEFT)
+            if (previousGestureData == null)
             {
-                gestureStatusLeft += "Left Hand Gesture: " + data.name;
-            }
-            else if (bodySideType == BodySideType.BODY_SIDE_RIGHT)
-            {
-                gestureStatusRight += "Right Hand Gesture: " + data.name;
+                previousGestureData = data;
             }
 
-            if (gestureStatusLeft == String.Empty)
-                form.UpdateGestureInfo("Frame " + data.frameNumber + ") " + gestureStatusRight + "\n", System.Drawing.Color.SeaGreen);
-            else
-                form.UpdateGestureInfo("Frame " + data.frameNumber + ") " + gestureStatusLeft + ", " + gestureStatusRight + "\n", System.Drawing.Color.SeaGreen);
+            // Limit Alert Output to UI
+            if (previousGestureData.name.Equals(data.name) && previousGestureData.frameNumber != data.frameNumber)
+            {
+                IHand hand;
+                if (handData.QueryHandDataById(data.handId, out hand) != Status.STATUS_NO_ERROR)
+                    return;
+                BodySideType bodySideType = hand.BodySide;
+
+                if (bodySideType == BodySideType.BODY_SIDE_LEFT)
+                {
+                    gestureStatusLeft += "Left Hand Gesture: " + data.name;
+                }
+                else if (bodySideType == BodySideType.BODY_SIDE_RIGHT)
+                {
+                    gestureStatusRight += "Right Hand Gesture: " + data.name;
+                }
+
+                if (gestureStatusLeft == String.Empty)
+                    form.UpdateGestureInfo("Frame " + data.frameNumber + ") " + gestureStatusRight +
+                        " At Position: x=" + hand.MassCenterWorld.x.ToString() +
+                        "; y=" + hand.MassCenterWorld.y.ToString() +
+                        "; z=" + hand.MassCenterWorld.z.ToString() +
+                        "\n", System.Drawing.Color.SeaGreen);
+                else
+                    form.UpdateGestureInfo("Frame " + data.frameNumber + ") " + gestureStatusRight +
+                        " At Position: x=" + hand.MassCenterWorld.x.ToString() +
+                        "; y=" + hand.MassCenterWorld.y.ToString() +
+                        "; z=" + hand.MassCenterWorld.z.ToString() +
+                        "\n", System.Drawing.Color.SeaGreen);
+
+                previousGestureData = data;
+            }
         }
 
 
@@ -96,59 +126,7 @@ namespace streams.cs
             depthBitmap.Dispose();
         }
 
-        /* Displaying current frames hand joints */
-        /*
-        private void DisplayCursorJoints(long timeStamp = 0)
-        {
-            mCursorClick[0] = Math.Max(0, mCursorClick[0] - 1);
-            mCursorClick[1] = Math.Max(0, mCursorClick[1] - 1);
 
-            int numOfHands = cursorData.QueryNumberOfCursors();
-            if (numOfHands == 1)
-            {
-                mCursorPoints[1].Clear();
-            }
-
-            for (int i = 0; i < numOfHands; i++)
-            {
-                //Get hand by time of appearance
-                ICursor cursor;
-                if (cursorData.QueryCursorData(AccessOrderType.ACCESS_ORDER_BY_TIME, i, out cursor) == Status.STATUS_NO_ERROR)
-                {
-                    if (cursor != null)
-                    {
-                        // collect cursor points
-
-                        Point3DF32 imagePoint = cursor.CursorPointImage;
-
-                        mCursorPoints[i].Enqueue(imagePoint);
-                        if (mCursorPoints[i].Count > 50)
-                            mCursorPoints[i].Dequeue();
-
-                        mCursorHandSide[i] = cursor.BodySide;
-                        GestureData gestureData;
-                        if (cursorData.IsGestureFiredByHand(GestureType.CURSOR_CLICK, cursor.UniqueId, out gestureData))
-                        {
-                            mCursorClick[i] = 7;
-                        }
-                    }
-                }
-            } // end iterating over hands
-
-            if (numOfHands > 0)
-            {
-                form.DisplayCursor(numOfHands, mCursorPoints, mCursorClick, mCursorHandSide);
-            }
-            else
-            {
-                mCursorPoints[0].Clear();
-                mCursorPoints[1].Clear();
-
-                mCursorHandSide[0] = BodySideType.BODY_SIDE_UNKNOWN;
-                mCursorHandSide[1] = BodySideType.BODY_SIDE_UNKNOWN;
-            }
-        }
-        */
 
         /* Using SenseManager to handle data */
         public void RecogniseHands(Sample sample)
@@ -162,9 +140,8 @@ namespace streams.cs
                     handData.Update();
 
                     DisplayPicture(sample.Depth, handData);
-                    DisplayGesture(handData, frameNumber);
                     DisplayJoints(handData);
-                    //DisplayAlerts(handData, frameNumber);
+
                 }
                 form.UpdateResultImage();
             }
@@ -177,10 +154,10 @@ namespace streams.cs
             {
                 HandConfiguration.AlertFired += OnFiredAlert;
                 HandConfiguration.GestureFired += OnFiredGesture;
-                HandConfiguration.ApplyChanges();               
+                HandConfiguration.ApplyChanges();
             }
         }
-       
+
 
         public void EnableGesturesFromSelection()
         {
@@ -191,14 +168,17 @@ namespace streams.cs
                 if (ActivatedGestures.Count != 0)
                 {
                     HandConfiguration.DisableAllGestures();
+                    form.UpdateGestureInfo("--------- ALL GESTURES DISABLED-------\n", System.Drawing.Color.Orange);
                     foreach (string gestureName in ActivatedGestures)
                     {
                         if (HandConfiguration.IsGestureEnabled(gestureName) == false)
                         {
                             HandConfiguration.EnableGesture(gestureName, true);
-                            HandConfiguration.ApplyChanges(); // Ev. aus Schleife nehmen
+                            form.UpdateGestureInfo("Gesture: '" + gestureName + "' enabled\n", System.Drawing.Color.Orange);
                         }
                     }
+
+                    HandConfiguration.ApplyChanges(); 
                 }
 
                 // No gestures activated 
@@ -256,7 +236,12 @@ namespace streams.cs
         {
             // Clean Up
             if (handData != null) handData.Dispose();
-            if (HandConfiguration != null) HandConfiguration.Dispose();
+            if (HandConfiguration != null)
+            {
+                HandConfiguration.AlertFired -= OnFiredAlert;
+                HandConfiguration.GestureFired -= OnFiredGesture;
+                HandConfiguration.Dispose();
+            }
             foreach (Image Image in _mImages)
             {
                 Image.Dispose();
