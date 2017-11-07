@@ -20,7 +20,7 @@ namespace streams.cs
         public bool Stop { get; set; }
 
         public event EventHandler<UpdateStatusEventArgs> UpdateStatus = null;
-                
+
 
         /*
          * Manage Session and SenseManager in central class
@@ -82,12 +82,12 @@ namespace streams.cs
                 MessageBox.Show(null, e.ToString(), "Can not dispose SenseManager", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-       
+
         public void InitSenseManager()
         {
             if (SenseManager.Init() == RS.Status.STATUS_NO_ERROR)
             {
-                SetStatus("SenseManager Init Successfull");                      
+                SetStatus("SenseManager Init Successfull");
             }
             else
             {
@@ -128,11 +128,29 @@ namespace streams.cs
 
             else return -1;
         }
-        
+
         public void ActivateSampleReader()
         {
             sampleReader = RS.SampleReader.Activate(SenseManager);
-            
+
         }
+
+        public void SetCameraParameters()
+        {
+            RS.Device device = SenseManager.CaptureManager.Device;
+
+            if (device != null)
+            {
+                device.ResetProperties(RS.StreamType.STREAM_TYPE_ANY);                  //Reset all available streams
+                //device.IVCAMAccuracy = RS.IVCAMAccuracy.IVCAM_ACCURACY_COARSE;        // No Changes on SR300 Camera
+                //device.IVCAMLaserPower = 1;                                          //from 0==min to 16==max power 
+                //device.IVCAMFilterOption = 5;                                         //See table: https://software.intel.com/sites/landingpage/realsense/camera-sdk/v2016r3/documentation/html/index.html?ivcamfilteroption_device_pxccapture.html
+                //device.IVCAMMotionRangeTradeOff = 100;                                 //The value is in the range of 0 (short exposure, short range, and better motion) to 100 (long exposure and long range.)
+                //RS.PropertyInfo lowConfVal = device.DepthConfidenceThresholdInfo;     //Get possible range for Depth threshould 
+                //device.DepthConfidenceThreshold = 15;                                 //Threshould between 0 and 15    
+                           
+            }
+        }
+
     }
 }

@@ -157,6 +157,7 @@ namespace streams.cs
 
             //Get selected Camera
             manager.DeviceInfo = GetCheckedDevice();
+            
 
             // Setup processing Pipeline
             manager.ActivateSampleReader();
@@ -168,7 +169,8 @@ namespace streams.cs
 
             // Initialise Processing Pipeline 
             manager.InitSenseManager();
-            
+            manager.SetCameraParameters();
+
             // Thread for Streaming 
             System.Threading.Thread thread1 = new System.Threading.Thread(DoWork);
             thread1.Start();
@@ -187,7 +189,7 @@ namespace streams.cs
                     manager.FrameNumber++;                    
                     
                     handsRecognition.RecogniseHands(sample);
-                    streams.RenderStreams(sample); // After Hands Recognition Since Hands recognition takes longer 
+                    //streams.RenderStreams(sample); // After Hands Recognition Since Hands recognition takes longer 
                     manager.SenseManager.ReleaseFrame();
                 }
 

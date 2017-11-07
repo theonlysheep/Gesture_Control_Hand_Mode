@@ -28,6 +28,15 @@ namespace streams.cs
 
         private MainForm form = null;
 
+        #region Constants 
+
+        //Defining frustum Box for Hand tracking
+        const float NEAR_TRACKING_DISTANCE = 10;        
+        const float FAR_TRACKING_DISTANCE = 10;
+        const float NEAR_TRACKING_WIDTH = 10;
+        const float FAR_TRACKING_WIDTH = 10;
+
+        #endregion
 
         public HandsRecognition(Manager mngr, MainForm frm)
         {
@@ -173,11 +182,14 @@ namespace streams.cs
                     {
                         if (HandConfiguration.IsGestureEnabled(gestureName) == false)
                         {
-                            HandConfiguration.EnableGesture(gestureName, true);
-                            form.UpdateGestureInfo("Gesture: '" + gestureName + "' enabled\n", System.Drawing.Color.Orange);
-                        }
-                    }
+                            if (HandConfiguration.EnableGesture(gestureName, true) == Status.STATUS_NO_ERROR)
+                            {
+                                form.UpdateGestureInfo("Gesture: '" + gestureName + "' enabled = " + HandConfiguration.IsGestureEnabled(gestureName).ToString() + "\n", System.Drawing.Color.Orange);
+                            }
 
+                            else form.UpdateGestureInfo("Could not enable '" + gestureName + "\n", System.Drawing.Color.Red);
+                        }
+                    }                    
                     HandConfiguration.ApplyChanges(); 
                 }
 
@@ -219,7 +231,7 @@ namespace streams.cs
                 manager.Stop = true;
                 return;
             }
-
+           
             HandConfiguration.TrackingMode = TrackingModeType.TRACKING_MODE_FULL_HAND;
             HandConfiguration.TrackedJointsEnabled = true;
             HandConfiguration.EnableJointSpeed(JointType.JOINT_INDEX_TIP, JointSpeedType.JOINT_SPEED_ABSOLUTE, 20);
@@ -227,6 +239,8 @@ namespace streams.cs
             HandConfiguration.EnableAllAlerts();
             HandConfiguration.SegmentationImageEnabled = false;
             HandConfiguration.SmoothingValue = 1; // The value is from 0(not smoothed) to 1(smoothed motion).
+            HandConfiguration.SetTrackingBounds(NEAR_TRACKING_DISTANCE, FAR_TRACKING_DISTANCE, NEAR_TRACKING_WIDTH, FAR_TRACKING_WIDTH); //Set tracking bounds frustum
+
 
             HandConfiguration.ApplyChanges();
 
