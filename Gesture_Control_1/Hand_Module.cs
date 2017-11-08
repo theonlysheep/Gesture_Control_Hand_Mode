@@ -19,22 +19,34 @@ namespace streams.cs
         private const int NumberOfFramesToDelay = 3;
 
         private readonly Queue<Point3DF32>[] mCursorPoints;
-        private readonly int[] mCursorClick;
-        private readonly BodySideType[] mCursorHandSide;
 
         public List<string> ActivatedGestures { get; set; }
 
         private Manager manager;
-
         private MainForm form = null;
+
+        public Dictionary<FingerType, FingerFlex>[] fingerStatus = new Dictionary<FingerType, FingerFlex>[2];
+        public int numOfHands = 0;
+
+        public enum FingerFlex
+        {
+            FOLDED,
+            UNKNOWN,
+            EXTENDED,
+        };
 
         #region Constants 
 
         //Defining frustum Box for Hand tracking
-        const float NEAR_TRACKING_DISTANCE = 10;        
+        const float NEAR_TRACKING_DISTANCE = 10;
         const float FAR_TRACKING_DISTANCE = 10;
         const float NEAR_TRACKING_WIDTH = 10;
         const float FAR_TRACKING_WIDTH = 10;
+
+        //Define Parameters for own Gesture 
+        const Int32 MAX_FOLDEDNESS_FACTOR = 20; //Between 0 - 100
+        const Int32 MIN_EXTENDED_FACTOR = 80; //Between 0 - 100
+
 
         #endregion
 
@@ -44,10 +56,7 @@ namespace streams.cs
             mCursorPoints = new Queue<Point3DF32>[2];
             mCursorPoints[0] = new Queue<Point3DF32>();
             mCursorPoints[1] = new Queue<Point3DF32>();
-
-            mCursorHandSide = new BodySideType[2];
-            mCursorClick = new int[2];
-
+            
             manager = mngr;
             form = frm;
 
@@ -131,7 +140,7 @@ namespace streams.cs
                 return;
 
             var depthBitmap = new System.Drawing.Bitmap(depth.Info.width, depth.Info.height, System.Drawing.Imaging.PixelFormat.Format8bppIndexed);
-            form.DisplayBitmap(depthBitmap);
+            form.DisplayHandRecognitionBitmap(depthBitmap);
             depthBitmap.Dispose();
         }
 
@@ -146,10 +155,13 @@ namespace streams.cs
 
                 if (handData != null)
                 {
-                    handData.Update();
+                    handData.Update(); //Get newest Data from camera 
 
                     DisplayPicture(sample.Depth, handData);
                     DisplayJoints(handData);
+                    WorkingWithHandData(handData);
+                    form.DisplayFingerStatus();
+
 
                 }
                 form.UpdateResultImage();
@@ -189,8 +201,8 @@ namespace streams.cs
 
                             else form.UpdateGestureInfo("Could not enable '" + gestureName + "\n", System.Drawing.Color.Red);
                         }
-                    }                    
-                    HandConfiguration.ApplyChanges(); 
+                    }
+                    HandConfiguration.ApplyChanges();
                 }
 
                 // No gestures activated 
@@ -231,7 +243,7 @@ namespace streams.cs
                 manager.Stop = true;
                 return;
             }
-           
+
             HandConfiguration.TrackingMode = TrackingModeType.TRACKING_MODE_FULL_HAND;
             HandConfiguration.TrackedJointsEnabled = true;
             HandConfiguration.EnableJointSpeed(JointType.JOINT_INDEX_TIP, JointSpeedType.JOINT_SPEED_ABSOLUTE, 20);
@@ -262,15 +274,70 @@ namespace streams.cs
             }
         }
 
-        /*_______________________________________________________________________________________________________________________________________________
+        public void WorkingWithHandData(HandData handData)
+        {
+            //Get data for two hands 
+            var jointDataNodes = new Dictionary<JointType, JointData>[2]; //[Hand]
+            var extremityDataNodes = new Dictionary<ExtremityType, ExtremityData>[2]; //[Hand]
+            var fingerData = new Dictionary<FingerType, FingerData>[2]; //[Hand]
+            var bodySide = new BodySideType[2];            
+            Array fingers = Enum.GetValues(typeof(FingerType));
+
+            numOfHands = handData.NumberOfHands;
+
+            // Iterate over Hands
+            for (int i = 0; i < numOfHands; i++)
+            {
+                //Get hand by time of appearance
+                IHand iHand;
+                if (handData.QueryHandData(AccessOrderType.ACCESS_ORDER_BY_TIME, i, out iHand) == Status.STATUS_NO_ERROR)
+                {
+                    if (iHand != null)
+                    {
+                        //Iterate Joints
+                        jointDataNodes[i] = iHand.TrackedJoints;
+
+                        //Iterate Extremiteis
+                        extremityDataNodes[i] = iHand.ExtremityPoints;
+
+                        //Fingers                         
+                        fingerData[i] = iHand.FingerData;
+
+                        bodySide[i] = iHand.BodySide;
+
+                    }
+                }
+
+                // Iterathe through all fingers and determine if folded or not
+                foreach (FingerType fingerType in fingers)
+                {
+                    //Finger folded
+                    if (fingerData[i][fingerType].foldedness <= MAX_FOLDEDNESS_FACTOR)
+                    {
+                        fingerStatus[i][fingerType] = FingerFlex.FOLDED;
+                    }
+
+                    // Finger Extended
+                    else if (fingerData[i][fingerType].foldedness >= MIN_EXTENDED_FACTOR)
+                    {
+                        fingerStatus[i][fingerType] = FingerFlex.EXTENDED;
+                    }
+
+                    else fingerStatus[i][fingerType] = FingerFlex.UNKNOWN;
+                }
+            } // end iterating over hands
+            
+        }
+
+        /*______Display Gestures____________________________________________________________________________________________________________________
         */
 
-        /* Displaying current frame gestures */
-        private void DisplayGesture(HandData handAnalysis, int frameNumber)
+        /* Displaying current  gestures */
+        private void DisplayGesture(HandData handData, int frameNumber)
         {
-            if (handAnalysis.FiredGestureData != null)
+            if (handData.FiredGestureData != null)
             {
-                int firedGesturesNumber = handAnalysis.FiredGestureData.Length;
+                int firedGesturesNumber = handData.FiredGestureData.Length;
                 string gestureStatusLeft = string.Empty;
                 string gestureStatusRight = string.Empty;
 
@@ -279,13 +346,13 @@ namespace streams.cs
                     return;
                 }
 
-                foreach (var gestureData in handAnalysis.FiredGestureData)
+                foreach (var gestureData in handData.FiredGestureData)
                 {
-                    IHand handData;
-                    if (handAnalysis.QueryHandDataById(gestureData.handId, out handData) != Status.STATUS_NO_ERROR)
+                    IHand iHand;
+                    if (handData.QueryHandDataById(gestureData.handId, out iHand) != Status.STATUS_NO_ERROR)
                         return;
 
-                    BodySideType bodySideType = handData.BodySide;
+                    BodySideType bodySideType = iHand.BodySide;
                     if (bodySideType == BodySideType.BODY_SIDE_LEFT)
                     {
                         gestureStatusLeft += "Left Hand Gesture: " + gestureData.name;
@@ -375,7 +442,7 @@ namespace streams.cs
                         return;
                     }
 
-                    form.DisplayBitmap(depthBitmap);
+                    form.DisplayHandRecognitionBitmap(depthBitmap);
                     image3.ReleaseAccess(data3);
                 }
                 depthBitmap.Dispose();
@@ -387,113 +454,49 @@ namespace streams.cs
 
 
         /* Displaying current frames hand joints */
-        private void DisplayJoints(HandData handOutput, long timeStamp = 0)
+        private void DisplayJoints(HandData handData, long timeStamp = 0)
         {
             //Iterate hands
-            var nodes = new JointData[][] { new JointData[0x20], new JointData[0x20] };
-            var extremityNodes = new ExtremityData[][] { new ExtremityData[0x6], new ExtremityData[0x6] };
+            var jointDataNodes = new JointData[][] { new JointData[0x20], new JointData[0x20] };
+            var extremityDataNodes = new ExtremityData[][] { new ExtremityData[0x6], new ExtremityData[0x6] };
 
-            int numOfHands = handOutput.NumberOfHands;
+            int numOfHands = handData.NumberOfHands;
 
             if (numOfHands == 1) mCursorPoints[1].Clear();
 
             for (int i = 0; i < numOfHands; i++)
             {
                 //Get hand by time of appearance
-                IHand handData;
-                if (handOutput.QueryHandData(AccessOrderType.ACCESS_ORDER_BY_TIME, i, out handData) == Status.STATUS_NO_ERROR)
+                IHand iHand;
+                if (handData.QueryHandData(AccessOrderType.ACCESS_ORDER_BY_TIME, i, out iHand) == Status.STATUS_NO_ERROR)
                 {
-                    if (handData != null)
+                    if (iHand != null)
                     {
                         //Iterate Joints
-                        foreach (var tJ in handData.TrackedJoints)
+                        foreach (var tJ in iHand.TrackedJoints)
                         {
-                            nodes[i][(int)tJ.Key] = tJ.Value;
+                            jointDataNodes[i][(int)tJ.Key] = tJ.Value;
                         }   // end iterating over joints
 
                         for (int j = 0; j < HandData.NUMBER_OF_EXTREMITIES; j++)
                         {
-                            foreach (var eP in handData.ExtremityPoints)
+                            foreach (var eP in iHand.ExtremityPoints)
                             {
-                                extremityNodes[i][(int)eP.Key] = eP.Value;
+                                extremityDataNodes[i][(int)eP.Key] = eP.Value;
                             }
                         }
-
-
                     }
                 }
             } // end iterating over hands
 
 
-            form.DisplayJoints(nodes, numOfHands);
+            form.DisplayJoints(jointDataNodes, numOfHands);
             if (numOfHands > 0)
             {
-                form.DisplayExtremities(numOfHands, extremityNodes);
+                form.DisplayExtremities(numOfHands, extremityDataNodes);
             }
         }
-
-        //private void DisplayAlerts(HandData handAnalysis, int frameNumber)
-        //{
-        //    bool isChanged = false;
-        //    string sAlert = "Alert: ";
-        //    if (handAnalysis.FiredAlertData != null)
-        //        for (int i = 0; i < handAnalysis.FiredAlertData.Length; i++)
-        //        {
-
-        //            //See HandAnalysis.AlertData.AlertType for all available alerts
-        //            switch (handAnalysis.FiredAlertData[i].label)
-        //            {
-        //                case AlertType.ALERT_HAND_DETECTED:
-        //                    {
-
-        //                        sAlert += "Hand Detected, ";
-        //                        isChanged = true;
-        //                        break;
-        //                    }
-        //                case AlertType.ALERT_HAND_NOT_DETECTED:
-        //                    {
-
-        //                        sAlert += "Hand Not Detected, ";
-        //                        isChanged = true;
-        //                        break;
-        //                    }
-        //                case AlertType.ALERT_HAND_CALIBRATED:
-        //                    {
-
-        //                        sAlert += "Hand Calibrated, ";
-        //                        isChanged = true;
-        //                        break;
-        //                    }
-        //                case AlertType.ALERT_HAND_NOT_CALIBRATED:
-        //                    {
-
-        //                        sAlert += "Hand Not Calibrated, ";
-        //                        isChanged = true;
-        //                        break;
-        //                    }
-        //                case AlertType.ALERT_HAND_INSIDE_BORDERS:
-        //                    {
-
-        //                        sAlert += "Hand Inside Border, ";
-        //                        isChanged = true;
-        //                        break;
-        //                    }
-        //                case AlertType.ALERT_HAND_OUT_OF_BORDERS:
-        //                    {
-
-        //                        sAlert += "Hand Out Of Borders, ";
-        //                        isChanged = true;
-        //                        break;
-        //                    }
-
-        //            }
-        //        }
-        //    if (isChanged)
-        //    {
-        //        form.UpdateGestureInfo("Frame " + frameNumber + ") " + sAlert + "\n", System.Drawing.Color.RoyalBlue);
-        //    }
-        //}
-
+        
     }
 }
 

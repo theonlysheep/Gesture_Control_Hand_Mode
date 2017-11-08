@@ -26,7 +26,7 @@ namespace streams.cs
 
         // Layout 
         private ToolStripMenuItem[] streamMenue = new ToolStripMenuItem[RS.Capture.STREAM_LIMIT];
-        //private RadioButton[] streamButtons = new RadioButton[RS.Capture.STREAM_LIMIT];
+
         public Dictionary<ToolStripMenuItem, RS.DeviceInfo> devices = new Dictionary<ToolStripMenuItem, RS.DeviceInfo>();
         private Dictionary<ToolStripMenuItem, RS.StreamProfile> profiles = new Dictionary<ToolStripMenuItem, RS.StreamProfile>();
         private Dictionary<ToolStripMenuItem, int> devices_iuid = new Dictionary<ToolStripMenuItem, int>();
@@ -37,6 +37,8 @@ namespace streams.cs
 
         // Drawing Parameters 
         private Bitmap resultBitmap = null;
+
+        System.Threading.Thread thread1;
 
         private class Item
         {
@@ -72,8 +74,8 @@ namespace streams.cs
             rgbImage.Resize += new EventHandler(ResizeHandler);
             depthImage.Resize += new EventHandler(ResizeHandler);
 
-            radioDepth.Click += new EventHandler(StreamButton_Click);
-            radioIR.Click += new EventHandler(StreamButton_Click);
+            radioDepth.Click += new EventHandler(StreamRadioButton_Click);
+            radioIR.Click += new EventHandler(StreamRadioButton_Click);
 
 
             // Fill drop down Menues 
@@ -86,7 +88,8 @@ namespace streams.cs
 
             // Initialise Intel Realsense Components
             manager.CreateSession();
-            manager.CreateSenseManager();            
+            manager.CreateSenseManager();
+
         }
 
         // Get entries for Device Menue 
@@ -150,21 +153,21 @@ namespace streams.cs
             menuStrip.Enabled = false;
             buttonStart.Enabled = false;
             buttonStop.Enabled = true;
-            
+
             // Reset all components
             manager.DeviceInfo = null;
             manager.Stop = false;
 
             //Get selected Camera
             manager.DeviceInfo = GetCheckedDevice();
-            
 
             // Setup processing Pipeline
             manager.ActivateSampleReader();
-            streams.ConfigureStreams();            
+            streams.ConfigureStreams();
+            streams.SetStreamMode();
             handsRecognition.SetUpHandModule();
             handsRecognition.RegisterHandEvents();
-            
+
             PopulateGestureList();
 
             // Initialise Processing Pipeline 
@@ -172,7 +175,7 @@ namespace streams.cs
             manager.SetCameraParameters();
 
             // Thread for Streaming 
-            System.Threading.Thread thread1 = new System.Threading.Thread(DoWork);
+            thread1 = new System.Threading.Thread(DoWork);
             thread1.Start();
             System.Threading.Thread.Sleep(5);
         }
@@ -186,11 +189,13 @@ namespace streams.cs
                 while (!manager.Stop)
                 {
                     RS.Sample sample = manager.GetSample();
-                    manager.FrameNumber++;                    
-                    
-                    handsRecognition.RecogniseHands(sample);
-                    //streams.RenderStreams(sample); // After Hands Recognition Since Hands recognition takes longer 
-                    manager.SenseManager.ReleaseFrame();
+                    manager.IncrementFrameNumber();
+                    if (sample != null)
+                    {
+                        handsRecognition.RecogniseHands(sample);
+                        streams.RenderStreams(sample); // After Hands Recognition Since Hands recognition takes longer 
+                        manager.SenseManager.ReleaseFrame();
+                    }
                 }
 
             }
@@ -199,21 +204,29 @@ namespace streams.cs
                 MessageBox.Show(null, e.ToString(), "Error while Recognition", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            Invoke(new DoWorkEnd(
-                delegate
-                {
-                    buttonStart.Enabled = true;
-                    buttonStop.Enabled = false;
-                    menuStrip.Enabled = true;
-                    if (manager.Stop == true)
-                    {
-                        manager.SetStatus("Stopped");
-                    }
-                    manager.SenseManager.Close();
-                    if (closing) Close();
+            try
+            {
+                Invoke(new DoWorkEnd(
+                        delegate
+                        {
+                            buttonStart.Enabled = true;
+                            buttonStop.Enabled = false;
+                            menuStrip.Enabled = true;
+                            if (manager.Stop == true)
+                            {
+                                manager.SetStatus("Stopped");
+                            }
+                            manager.SenseManager.Close();
 
-                }
-            ));
+                            if (closing) Close();
+
+                        }
+                    ));
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(null, e.ToString(), "Error while Stopping", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         public RS.DeviceInfo GetCheckedDevice()
@@ -255,8 +268,11 @@ namespace streams.cs
         private void FormClosingHandler(object sender, FormClosingEventArgs e)
         {
             manager.Stop = true;
-            e.Cancel = buttonStop.Enabled;
+            e.Cancel = buttonStop.Enabled; //???????
             closing = true;
+            FormClosing -= new FormClosingEventHandler(FormClosingHandler); // Workarond, otherwise Event will keep looping 
+            if (thread1 == null) Close(); //If Thread is not activated make Main Thread closing the Window 
+            
         }
 
         private void SetStatus(String text)
@@ -298,14 +314,16 @@ namespace streams.cs
         private void buttonStop_Click(object sender, EventArgs e)
         {
             manager.Stop = true;
+            ResetGesturesList();
+            ResetFingerStatus();
         }
 
-        private void StreamButton_Click(object sender, EventArgs e)
+        private void StreamRadioButton_Click(object sender, EventArgs e)
         {
             RS.StreamType selected_stream = GetSelectedStream();
-            if (selected_stream != streams.StreamType)
+            if (selected_stream != streams.SecondStreamType)
             {
-                streams.StreamType = selected_stream;
+                streams.SecondStreamType = selected_stream;
             }
         }
 
@@ -341,7 +359,7 @@ namespace streams.cs
             }), new object[] { status, color });
         }
 
-        public void DisplayBitmap(Bitmap picture)
+        public void DisplayHandRecognitionBitmap(Bitmap picture)
         {
             lock (this)
             {
@@ -350,7 +368,7 @@ namespace streams.cs
                 resultBitmap = new Bitmap(picture);
             }
         }
-        
+
         private void ResultPanel_Paint(object sender, PaintEventArgs e)
         {
             lock (this)
@@ -385,8 +403,8 @@ namespace streams.cs
 
             foreach (object itemChecked in gestureListBox.CheckedItems)
             {
-                    activatedGestures.Add(itemChecked.ToString());
-    
+                activatedGestures.Add(itemChecked.ToString());
+
             }
 
             return activatedGestures;
@@ -409,7 +427,7 @@ namespace streams.cs
                     gestureListBox.Text = "";
                     gestureListBox.Items.Clear();
                     gestureListBox.SelectedIndex = -1;
-                    gestureListBox.Enabled = false;
+                    gestureListBox.Enabled = false;                    
                     gestureListBox.Size = new System.Drawing.Size(100, 20); // ?????????????????
                 }), new object[] { });
         }
@@ -607,7 +625,7 @@ namespace streams.cs
             }
             pen.Dispose();
         }
-        
+
         private void gestureListBox_ItemCheck(object sender, ItemCheckEventArgs e)
         {
             // Workaround to include currently selsected item into condsidderation 
@@ -615,7 +633,93 @@ namespace streams.cs
             {
                 handsRecognition.EnableGesturesFromSelection();
             }));
-            
+
         }
+
+        private void liveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //Set flags 
+            manager.Live = true;
+            manager.Play = manager.Record = false;
+
+            //Set drop down entries
+            play.Checked = record.Checked = false;
+            live.Checked = true;
+
+        }
+
+        private void playFromFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //Set flags 
+            manager.Play = true;
+            manager.Record = manager.Live = false;
+
+            //Set drop down entries
+            live.Checked = record.Checked = false;
+            play.Checked = true;
+
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "RSSDK clip|*.rssdk|Old format clip|*.pcsdk|All files|*.*";
+                ofd.CheckFileExists = true;
+                ofd.CheckPathExists = true;
+                manager.Filename = (ofd.ShowDialog() == DialogResult.OK) ? ofd.FileName : null;
+            }
+        }
+
+        private void recordFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //Set flags 
+            manager.Record = true;
+            manager.Play = manager.Live = false;
+
+            //Set drop down entries 
+            live.Checked = play.Checked = false;
+            record.Checked = true;
+
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "RSSDK clip|*.rssdk|All Files|*.*";
+            sfd.CheckPathExists = true;
+            sfd.OverwritePrompt = true;
+            sfd.AddExtension = true;
+            manager.Filename = (sfd.ShowDialog() == DialogResult.OK) ? sfd.FileName : null;
+
+        }
+
+        private delegate void DisplayFingerStatusDelegate();
+        public void DisplayFingerStatus()
+        {
+            ResetFingerStatus();
+            fingerStatusTable.Invoke(new DisplayFingerStatusDelegate(delegate ()
+            {
+                for (int hand = 0; hand < handsRecognition.numOfHands; hand++)
+                {
+                    int i = 0;
+                    foreach (KeyValuePair<RS.Hand.FingerType, HandsRecognition.FingerFlex> finger in handsRecognition.fingerStatus[hand])
+                    {
+                        string value = finger.Value.ToString();
+                        fingerStatusTable.GetControlFromPosition(hand + 1, i).Text = value;
+                        i++;
+                    }
+                }
+            }), new object[] { });
+        }
+
+        private delegate void ResetFingerStatusDelegate();
+        public void ResetFingerStatus()
+        {
+            fingerStatusTable.Invoke(new ResetFingerStatusDelegate(delegate ()
+            {
+                for (int hand = 0; hand < 2; hand++)
+                {
+                    for (int finger = 0; finger < 5; finger++)
+                    {
+                        fingerStatusTable.GetControlFromPosition(hand + 1, finger+1).Text = "-";                        
+                    }
+                }
+            }), new object[] { });
+        }
+
+
     }
 }
