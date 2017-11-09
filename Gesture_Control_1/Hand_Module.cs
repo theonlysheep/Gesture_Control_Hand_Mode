@@ -25,7 +25,12 @@ namespace streams.cs
         private Manager manager;
         private MainForm form = null;
 
-        public Dictionary<FingerType, FingerFlex>[] fingerStatus = new Dictionary<FingerType, FingerFlex>[2];
+        public Dictionary<FingerType, FingerFlex>[] fingerStatus = new Dictionary<FingerType, FingerFlex>[]
+        {
+            new Dictionary<FingerType, FingerFlex>(),
+            new Dictionary<FingerType, FingerFlex>()
+        };
+
         public int numOfHands = 0;
 
         public enum FingerFlex
@@ -46,8 +51,6 @@ namespace streams.cs
         //Define Parameters for own Gesture 
         const Int32 MAX_FOLDEDNESS_FACTOR = 20; //Between 0 - 100
         const Int32 MIN_EXTENDED_FACTOR = 80; //Between 0 - 100
-
-
         #endregion
 
         public HandsRecognition(Manager mngr, MainForm frm)
@@ -56,7 +59,7 @@ namespace streams.cs
             mCursorPoints = new Queue<Point3DF32>[2];
             mCursorPoints[0] = new Queue<Point3DF32>();
             mCursorPoints[1] = new Queue<Point3DF32>();
-            
+
             manager = mngr;
             form = frm;
 
@@ -131,7 +134,7 @@ namespace streams.cs
             return Status.STATUS_NO_ERROR;
         }
 
-        #endregion 
+        #endregion
 
         /* Displaying Depth/Mask Images - for depth image only we use a delay of NumberOfFramesToDelay to sync image with tracking */
         private void DisplayCursorPicture(Image depth)
@@ -156,13 +159,14 @@ namespace streams.cs
                 if (handData != null)
                 {
                     handData.Update(); //Get newest Data from camera 
-
                     DisplayPicture(sample.Depth, handData);
-                    DisplayJoints(handData);
-                    WorkingWithHandData(handData);
-                    form.DisplayFingerStatus();
 
-
+                    if (handData.NumberOfHands > 0)
+                    {
+                        DisplayJoints(handData);
+                        bool statusChanged = GetFingerFlexState(handData);
+                        form.DisplayFingerStatus(statusChanged);
+                    }
                 }
                 form.UpdateResultImage();
             }
@@ -274,14 +278,15 @@ namespace streams.cs
             }
         }
 
-        public void WorkingWithHandData(HandData handData)
+        public bool GetFingerFlexState(HandData handData)
         {
             //Get data for two hands 
             var jointDataNodes = new Dictionary<JointType, JointData>[2]; //[Hand]
             var extremityDataNodes = new Dictionary<ExtremityType, ExtremityData>[2]; //[Hand]
             var fingerData = new Dictionary<FingerType, FingerData>[2]; //[Hand]
-            var bodySide = new BodySideType[2];            
+            var bodySide = new BodySideType[2];
             Array fingers = Enum.GetValues(typeof(FingerType));
+            bool statusChanged = false;
 
             numOfHands = handData.NumberOfHands;
 
@@ -309,24 +314,43 @@ namespace streams.cs
                 }
 
                 // Iterathe through all fingers and determine if folded or not
+                FingerFlex previousFlex = FingerFlex.UNKNOWN;
                 foreach (FingerType fingerType in fingers)
                 {
                     //Finger folded
                     if (fingerData[i][fingerType].foldedness <= MAX_FOLDEDNESS_FACTOR)
                     {
-                        fingerStatus[i][fingerType] = FingerFlex.FOLDED;
+                        fingerStatus[i].TryGetValue(fingerType, out previousFlex);
+                        if (previousFlex != FingerFlex.FOLDED)
+                        {
+                            fingerStatus[i][fingerType] = FingerFlex.FOLDED;
+                            statusChanged = true;
+                        }
                     }
 
                     // Finger Extended
                     else if (fingerData[i][fingerType].foldedness >= MIN_EXTENDED_FACTOR)
                     {
-                        fingerStatus[i][fingerType] = FingerFlex.EXTENDED;
+                        fingerStatus[i].TryGetValue(fingerType, out previousFlex);
+                        if (previousFlex != FingerFlex.EXTENDED)
+                        {
+                            fingerStatus[i][fingerType] = FingerFlex.EXTENDED;
+                            statusChanged = true;
+                        }
                     }
 
-                    else fingerStatus[i][fingerType] = FingerFlex.UNKNOWN;
+                    else
+                    {
+                        fingerStatus[i].TryGetValue(fingerType, out previousFlex);
+                        if (previousFlex != FingerFlex.UNKNOWN)
+                        {
+                            fingerStatus[i][fingerType] = FingerFlex.UNKNOWN;
+                            statusChanged = true;
+                        }
+                    }
                 }
             } // end iterating over hands
-            
+            return statusChanged;
         }
 
         /*______Display Gestures____________________________________________________________________________________________________________________
@@ -496,7 +520,7 @@ namespace streams.cs
                 form.DisplayExtremities(numOfHands, extremityDataNodes);
             }
         }
-        
+
     }
 }
 

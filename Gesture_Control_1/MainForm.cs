@@ -687,22 +687,25 @@ namespace streams.cs
         }
 
         private delegate void DisplayFingerStatusDelegate();
-        public void DisplayFingerStatus()
+        public void DisplayFingerStatus(bool statusChanged)
         {
-            ResetFingerStatus();
-            fingerStatusTable.Invoke(new DisplayFingerStatusDelegate(delegate ()
+            if (statusChanged)
             {
-                for (int hand = 0; hand < handsRecognition.numOfHands; hand++)
+                ResetFingerStatus();
+                fingerStatusTable.Invoke(new DisplayFingerStatusDelegate(delegate ()
                 {
-                    int i = 0;
-                    foreach (KeyValuePair<RS.Hand.FingerType, HandsRecognition.FingerFlex> finger in handsRecognition.fingerStatus[hand])
+                    for (int hand = 0; hand < handsRecognition.numOfHands; hand++)
                     {
-                        string value = finger.Value.ToString();
-                        fingerStatusTable.GetControlFromPosition(hand + 1, i).Text = value;
-                        i++;
+                        int i = 0;
+                        foreach (KeyValuePair<RS.Hand.FingerType, HandsRecognition.FingerFlex> finger in handsRecognition.fingerStatus[hand])
+                        {
+                            string value = finger.Value.ToString();
+                            fingerStatusTable.GetControlFromPosition(hand + 1, i + 1).Text = value;
+                            i++;
+                        }
                     }
-                }
-            }), new object[] { });
+                }), new object[] { });
+            }
         }
 
         private delegate void ResetFingerStatusDelegate();
