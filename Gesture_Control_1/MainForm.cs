@@ -172,6 +172,8 @@ namespace streams.cs
 
             // Initialise Processing Pipeline 
             manager.InitSenseManager();
+            ReadCameraParametersFromUI();
+            ReadHandModuleParametersFromUI();
             manager.SetCameraParameters();
 
             // Thread for Streaming 
@@ -186,9 +188,16 @@ namespace streams.cs
         {
             try
             {
+                RS.Status getFrameStatus;
+                RS.Sample sample = null;
                 while (!manager.Stop)
                 {
-                    RS.Sample sample = manager.GetSample();
+                    getFrameStatus = manager.GetSample(out sample);
+                    if(getFrameStatus == RS.Status.STATUS_EXEC_TIMEOUT || getFrameStatus == RS.Status.STATUS_DEVICE_LOST)
+                    {
+                        manager.SetStatus("Camera Error! Timeout or Device lost.");
+                        break;
+                    }
                     manager.IncrementFrameNumber();
                     if (sample != null)
                     {
@@ -246,7 +255,7 @@ namespace streams.cs
 
         }
 
-        // Eventhandler Methods
+        #region Eventhandler Methods
         private void RenderFrame(Object sender, RenderFrameEventArgs e)
         {
             if (e.image == null) return;
@@ -265,6 +274,20 @@ namespace streams.cs
             renders[(sender == rgbImage) ? 0 : 1].ResizePanel();
         }
 
+        /* Handle Evnets when one of the Camera Values Changed */
+        private void cameraSettingsChangedHandler(object sender, EventArgs e)
+        {
+            ReadCameraParametersFromUI();
+            manager.SetCameraParameters();
+        }
+
+        /* Handle Evnets when one of the Camera Values Changed */
+        private void handModuleSettingsChangedHandler(object sender, EventArgs e)
+        {
+            ReadHandModuleParametersFromUI();
+            handsRecognition.SetHandModuleParameters();
+        }
+
         private void FormClosingHandler(object sender, FormClosingEventArgs e)
         {
             manager.Stop = true;
@@ -274,6 +297,7 @@ namespace streams.cs
             if (thread1 == null) Close(); //If Thread is not activated make Main Thread closing the Window 
             
         }
+        #endregion
 
         private void SetStatus(String text)
         {
@@ -690,8 +714,7 @@ namespace streams.cs
         public void DisplayFingerStatus(bool statusChanged)
         {
             if (statusChanged)
-            {
-                ResetFingerStatus();
+            {                
                 fingerStatusTable.Invoke(new DisplayFingerStatusDelegate(delegate ()
                 {
                     for (int hand = 0; hand < handsRecognition.numOfHands; hand++)
@@ -723,6 +746,54 @@ namespace streams.cs
             }), new object[] { });
         }
 
+        private void ReadCameraParametersFromUI()
+        {
+            manager.cameraSettings.LaserPower = Decimal.ToInt32(laserPower.Value);
+            manager.cameraSettings.FilterOption = Decimal.ToInt32(filterOption.Value);
+            manager.cameraSettings.MotionRangeTradeoff = Decimal.ToInt32(motionRangeTradeoff.Value);
+            manager.cameraSettings.DepthConfidence = Decimal.ToUInt16(depthConfidence.Value);
+        }
 
+        private void ReadHandModuleParametersFromUI()
+        {
+            handsRecognition.handModuleSettings.JointSpeed = Decimal.ToInt32(jointSpeed.Value);
+            handsRecognition.handModuleSettings.SmoothingValue = (float)smoothingValue.Value;
+            handsRecognition.handModuleSettings.MaxFoldnessFactor = Decimal.ToInt32(minExtendedFactor.Value);
+            handsRecognition.handModuleSettings.MaxFoldnessFactor = Decimal.ToInt32(maxFoldnessFactor.Value);
+
+            handsRecognition.handModuleSettings.NearTrackingDistance = (float)nearTrackingDistance.Value;
+            handsRecognition.handModuleSettings.FurthestTrackingDistance = (float)farTrackingDistance.Value;
+            handsRecognition.handModuleSettings.NearTrackingHeight = (float)nearTrackingWidth.Value;
+            handsRecognition.handModuleSettings.FurthestTrackingWidth = (float)farTrackingHeight.Value;
+
+            handsRecognition.handModuleSettings.Stabalizer = stabilizer.Enabled;
+        }
+
+
+        private void defualtCameraSettingsButton_Click(object sender, EventArgs e)
+        {
+            // Default camera Setting 
+            laserPower.Value =16;
+            filterOption.Value = 0;
+            motionRangeTradeoff.Value = 0;
+            depthConfidence.Value = 0;
+        }
+       
+
+        private void defaultHandModuleSettingsButton_Click(object sender, EventArgs e)
+        {
+            // default hands module settings 
+            jointSpeed.Value = 20;
+            smoothingValue.Value = 1;
+            maxFoldnessFactor.Value = 20;
+            minExtendedFactor.Value = 80;
+
+            nearTrackingDistance.Value = 0;
+            farTrackingDistance.Value = 0;
+            nearTrackingWidth.Value = 0;
+            farTrackingHeight.Value = 0;
+
+            stabilizer.Enabled = true;
+        }
     }
 }

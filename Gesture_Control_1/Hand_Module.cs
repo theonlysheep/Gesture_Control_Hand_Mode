@@ -40,18 +40,22 @@ namespace streams.cs
             EXTENDED,
         };
 
-        #region Constants 
+        public struct HandModuleSettings
+        {
+            public int JointSpeed { get; set; }
+            public float SmoothingValue { get; set; }
+            public int MaxFoldnessFactor { get; set; }
+            public int MinExtendedFactor { get; set; }
+            public float NearTrackingDistance { get; set; }
+            public float FurthestTrackingDistance { get; set; }
+            public float FurthestTrackingWidth { get; set; }
+            public float NearTrackingHeight { get; set; }
+            public bool Stabalizer { get; set; }
 
-        //Defining frustum Box for Hand tracking
-        const float NEAR_TRACKING_DISTANCE = 10;
-        const float FAR_TRACKING_DISTANCE = 10;
-        const float NEAR_TRACKING_WIDTH = 10;
-        const float FAR_TRACKING_WIDTH = 10;
+        };
+        public HandModuleSettings handModuleSettings = new HandModuleSettings();
 
-        //Define Parameters for own Gesture 
-        const Int32 MAX_FOLDEDNESS_FACTOR = 20; //Between 0 - 100
-        const Int32 MIN_EXTENDED_FACTOR = 80; //Between 0 - 100
-        #endregion
+        
 
         public HandsRecognition(Manager mngr, MainForm frm)
         {
@@ -160,6 +164,7 @@ namespace streams.cs
                 {
                     handData.Update(); //Get newest Data from camera 
                     DisplayPicture(sample.Depth, handData);
+                    if (numOfHands == 0) form.ResetFingerStatus();
 
                     if (handData.NumberOfHands > 0)
                     {
@@ -248,17 +253,7 @@ namespace streams.cs
                 return;
             }
 
-            HandConfiguration.TrackingMode = TrackingModeType.TRACKING_MODE_FULL_HAND;
-            HandConfiguration.TrackedJointsEnabled = true;
-            HandConfiguration.EnableJointSpeed(JointType.JOINT_INDEX_TIP, JointSpeedType.JOINT_SPEED_ABSOLUTE, 20);
-            HandConfiguration.StabilizerEnabled = true;
-            HandConfiguration.EnableAllAlerts();
-            HandConfiguration.SegmentationImageEnabled = false;
-            HandConfiguration.SmoothingValue = 1; // The value is from 0(not smoothed) to 1(smoothed motion).
-            HandConfiguration.SetTrackingBounds(NEAR_TRACKING_DISTANCE, FAR_TRACKING_DISTANCE, NEAR_TRACKING_WIDTH, FAR_TRACKING_WIDTH); //Set tracking bounds frustum
-
-
-            HandConfiguration.ApplyChanges();
+            SetHandModuleParameters();
 
         }
 
@@ -318,7 +313,7 @@ namespace streams.cs
                 foreach (FingerType fingerType in fingers)
                 {
                     //Finger folded
-                    if (fingerData[i][fingerType].foldedness <= MAX_FOLDEDNESS_FACTOR)
+                    if (fingerData[i][fingerType].foldedness <= handModuleSettings.MaxFoldnessFactor)
                     {
                         fingerStatus[i].TryGetValue(fingerType, out previousFlex);
                         if (previousFlex != FingerFlex.FOLDED)
@@ -329,7 +324,7 @@ namespace streams.cs
                     }
 
                     // Finger Extended
-                    else if (fingerData[i][fingerType].foldedness >= MIN_EXTENDED_FACTOR)
+                    else if (fingerData[i][fingerType].foldedness >= handModuleSettings.MinExtendedFactor)
                     {
                         fingerStatus[i].TryGetValue(fingerType, out previousFlex);
                         if (previousFlex != FingerFlex.EXTENDED)
@@ -351,6 +346,36 @@ namespace streams.cs
                 }
             } // end iterating over hands
             return statusChanged;
+        }
+
+        public void SetHandModuleParameters()
+        {        
+
+            if (HandConfiguration != null)
+            {
+                // Fixed Settings 
+                HandConfiguration.TrackingMode = TrackingModeType.TRACKING_MODE_FULL_HAND;
+                HandConfiguration.EnableAllAlerts();
+                HandConfiguration.SegmentationImageEnabled = false;
+                HandConfiguration.TrackedJointsEnabled = true;
+
+                // Settings from UI
+                HandConfiguration.EnableJointSpeed(JointType.JOINT_INDEX_TIP, JointSpeedType.JOINT_SPEED_ABSOLUTE, handModuleSettings.JointSpeed);
+                HandConfiguration.StabilizerEnabled = handModuleSettings.Stabalizer;
+               
+               
+                HandConfiguration.SmoothingValue = handModuleSettings.SmoothingValue; // The value is from 0(not smoothed) to 1(smoothed motion).
+
+                //Set tracking bounds frustum
+                HandConfiguration.SetTrackingBounds(
+                    handModuleSettings.NearTrackingDistance,
+                    handModuleSettings.FurthestTrackingDistance,
+                    handModuleSettings.NearTrackingHeight,
+                    handModuleSettings.FurthestTrackingWidth);
+
+                HandConfiguration.ApplyChanges();
+
+            }
         }
 
         /*______Display Gestures____________________________________________________________________________________________________________________

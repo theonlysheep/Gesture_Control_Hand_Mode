@@ -26,6 +26,18 @@ namespace streams.cs
         public bool Record { get; set; } = false;
         public string Filename { get; set; }
 
+        // Camera Settings
+        public struct CameraSettings {
+            public int LaserPower { get; set; }
+            public int FilterOption { get; set; }
+            public int MotionRangeTradeoff { get; set; }
+            public ushort DepthConfidence { get; set; }
+        };
+        public CameraSettings cameraSettings = new CameraSettings();
+       
+
+
+
         public event EventHandler<UpdateStatusEventArgs> UpdateStatus = null;
 
 
@@ -112,19 +124,20 @@ namespace streams.cs
             }
         }
 
-        public RS.Sample GetSample()
+        public RS.Status GetSample(out RS.Sample sample)
         {
-
-            RS.Sample sample = null;
+            RS.Status status; 
+            sample = null;
             /* Wait until a frame is ready: Synchronized or Asynchronous 
              if no Response for 100 ms return */
-            if (SenseManager.AcquireFrame(true, 100) == RS.Status.STATUS_NO_ERROR)
+            status = SenseManager.AcquireFrame(true, 500);
+            if (status == RS.Status.STATUS_NO_ERROR)
             {
                 /* Aquire Frame from Camera */
                 sample = SenseManager.Sample;
-                return sample;
+                
             }
-            else return sample = null;
+            return status;
         }
 
         // Gets the maximum specified Range of the Device in mm
@@ -149,13 +162,14 @@ namespace streams.cs
 
             if (device != null)
             {
-                device.ResetProperties(RS.StreamType.STREAM_TYPE_ANY);                  //Reset all available streams
-                                                                                        //device.IVCAMAccuracy = RS.IVCAMAccuracy.IVCAM_ACCURACY_COARSE;        // No Changes on SR300 Camera
-                                                                                        //device.IVCAMLaserPower = 1;                                          //from 0==min to 16==max power 
-                                                                                        //device.IVCAMFilterOption = 5;                                         //See table: https://software.intel.com/sites/landingpage/realsense/camera-sdk/v2016r3/documentation/html/index.html?ivcamfilteroption_device_pxccapture.html
-                                                                                        //device.IVCAMMotionRangeTradeOff = 100;                                 //The value is in the range of 0 (short exposure, short range, and better motion) to 100 (long exposure and long range.)
-                                                                                        //RS.PropertyInfo lowConfVal = device.DepthConfidenceThresholdInfo;     //Get possible range for Depth threshould 
-                                                                                        //device.DepthConfidenceThreshold = 15;                                 //Threshould between 0 and 15    
+                device.ResetProperties(RS.StreamType.STREAM_TYPE_ANY);
+                //Reset all available streams
+                //device.IVCAMAccuracy = RS.IVCAMAccuracy.IVCAM_ACCURACY_COARSE;        // No Changes on SR300 Camera
+                device.IVCAMLaserPower = cameraSettings.LaserPower;                                          //from 0==min to 16==max power 
+                device.IVCAMFilterOption = cameraSettings.FilterOption;                                         //See table: https://software.intel.com/sites/landingpage/realsense/camera-sdk/v2016r3/documentation/html/index.html?ivcamfilteroption_device_pxccapture.html
+                device.IVCAMMotionRangeTradeOff = cameraSettings.MotionRangeTradeoff;                                 //The value is in the range of 0 (short exposure, short range, and better motion) to 100 (long exposure and long range.)
+                //RS.PropertyInfo lowConfVal = device.DepthConfidenceThresholdInfo;     //Get possible range for Depth threshould 
+                device.DepthConfidenceThreshold = cameraSettings.DepthConfidence;                                 //Threshould between 0 and 15    
 
             }
         }
