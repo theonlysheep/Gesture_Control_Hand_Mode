@@ -51,7 +51,6 @@
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStripLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.label9 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.messageBox = new System.Windows.Forms.RichTextBox();
@@ -110,6 +109,20 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.tableLayoutPanel10 = new System.Windows.Forms.TableLayoutPanel();
+            this.label21 = new System.Windows.Forms.Label();
+            this.indexFingerDetailsTable = new System.Windows.Forms.TableLayoutPanel();
+            this.label22 = new System.Windows.Forms.Label();
+            this.indexSpeedYLabel = new System.Windows.Forms.Label();
+            this.indexSpeedZLabel = new System.Windows.Forms.Label();
+            this.label25 = new System.Windows.Forms.Label();
+            this.label26 = new System.Windows.Forms.Label();
+            this.indexSpeedXLabel = new System.Windows.Forms.Label();
+            this.label28 = new System.Windows.Forms.Label();
+            this.label29 = new System.Windows.Forms.Label();
+            this.indexPositionXLabel = new System.Windows.Forms.Label();
+            this.indexPositionYLabel = new System.Windows.Forms.Label();
+            this.indexPositionZLabel = new System.Windows.Forms.Label();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.rgbImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.depthImage)).BeginInit();
@@ -118,7 +131,6 @@
             this.tableLayoutPanel3.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            this.tableLayoutPanel5.SuspendLayout();
             this.fingerStatusTable.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
             this.tableLayoutPanel9.SuspendLayout();
@@ -137,6 +149,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.farTrackingDistance)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nearTrackingWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.farTrackingHeight)).BeginInit();
+            this.tableLayoutPanel10.SuspendLayout();
+            this.indexFingerDetailsTable.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip
@@ -340,34 +354,12 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(959, 265);
             this.tableLayoutPanel1.TabIndex = 12;
             // 
-            // tableLayoutPanel5
-            // 
-            this.tableLayoutPanel5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel5.ColumnCount = 3;
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 215F));
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 215F));
-            this.tableLayoutPanel5.Controls.Add(this.label9, 2, 0);
-            this.tableLayoutPanel5.Controls.Add(this.label6, 0, 0);
-            this.tableLayoutPanel5.Controls.Add(this.messageBox, 0, 1);
-            this.tableLayoutPanel5.Controls.Add(this.gestureListBox, 1, 1);
-            this.tableLayoutPanel5.Controls.Add(this.fingerStatusTable, 2, 1);
-            this.tableLayoutPanel5.Controls.Add(this.label8, 1, 0);
-            this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 274);
-            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
-            this.tableLayoutPanel5.RowCount = 2;
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.07194F));
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 89.92806F));
-            this.tableLayoutPanel5.Size = new System.Drawing.Size(959, 122);
-            this.tableLayoutPanel5.TabIndex = 16;
-            // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(746, 0);
+            this.label9.Location = new System.Drawing.Point(762, 0);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(111, 12);
+            this.label9.Size = new System.Drawing.Size(111, 13);
             this.label9.TabIndex = 19;
             this.label9.Text = "Finger felxation Status";
             // 
@@ -376,16 +368,16 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(3, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(75, 12);
+            this.label6.Size = new System.Drawing.Size(75, 13);
             this.label6.TabIndex = 17;
             this.label6.Text = "Status Output ";
             // 
             // messageBox
             // 
             this.messageBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.messageBox.Location = new System.Drawing.Point(3, 15);
+            this.messageBox.Location = new System.Drawing.Point(3, 18);
             this.messageBox.Name = "messageBox";
-            this.messageBox.Size = new System.Drawing.Size(487, 104);
+            this.messageBox.Size = new System.Drawing.Size(453, 101);
             this.messageBox.TabIndex = 4;
             this.messageBox.Text = "";
             // 
@@ -393,9 +385,9 @@
             // 
             this.gestureListBox.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.gestureListBox.FormattingEnabled = true;
-            this.gestureListBox.Location = new System.Drawing.Point(496, 15);
+            this.gestureListBox.Location = new System.Drawing.Point(462, 21);
             this.gestureListBox.Name = "gestureListBox";
-            this.gestureListBox.Size = new System.Drawing.Size(244, 94);
+            this.gestureListBox.Size = new System.Drawing.Size(144, 94);
             this.gestureListBox.TabIndex = 13;
             this.gestureListBox.Visible = false;
             this.gestureListBox.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.gestureListBox_ItemCheck);
@@ -425,7 +417,7 @@
             this.fingerStatusTable.Controls.Add(this.label16, 0, 3);
             this.fingerStatusTable.Controls.Add(this.label17, 0, 4);
             this.fingerStatusTable.Controls.Add(this.label18, 0, 5);
-            this.fingerStatusTable.Location = new System.Drawing.Point(752, 15);
+            this.fingerStatusTable.Location = new System.Drawing.Point(762, 18);
             this.fingerStatusTable.Name = "fingerStatusTable";
             this.fingerStatusTable.RowCount = 6;
             this.fingerStatusTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
@@ -434,13 +426,13 @@
             this.fingerStatusTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
             this.fingerStatusTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
             this.fingerStatusTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.fingerStatusTable.Size = new System.Drawing.Size(204, 104);
+            this.fingerStatusTable.Size = new System.Drawing.Size(194, 101);
             this.fingerStatusTable.TabIndex = 14;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(71, 1);
+            this.label2.Location = new System.Drawing.Point(68, 1);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(25, 13);
             this.label2.TabIndex = 0;
@@ -449,7 +441,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(138, 1);
+            this.label3.Location = new System.Drawing.Point(132, 1);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(35, 13);
             this.label3.TabIndex = 1;
@@ -458,7 +450,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(4, 18);
+            this.label4.Location = new System.Drawing.Point(4, 17);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(40, 13);
             this.label4.TabIndex = 2;
@@ -467,7 +459,7 @@
             // labelThumbLeft
             // 
             this.labelThumbLeft.AutoSize = true;
-            this.labelThumbLeft.Location = new System.Drawing.Point(71, 18);
+            this.labelThumbLeft.Location = new System.Drawing.Point(68, 17);
             this.labelThumbLeft.Name = "labelThumbLeft";
             this.labelThumbLeft.Size = new System.Drawing.Size(10, 13);
             this.labelThumbLeft.TabIndex = 3;
@@ -476,7 +468,7 @@
             // labelThumbRight
             // 
             this.labelThumbRight.AutoSize = true;
-            this.labelThumbRight.Location = new System.Drawing.Point(138, 18);
+            this.labelThumbRight.Location = new System.Drawing.Point(132, 17);
             this.labelThumbRight.Name = "labelThumbRight";
             this.labelThumbRight.Size = new System.Drawing.Size(10, 13);
             this.labelThumbRight.TabIndex = 4;
@@ -485,7 +477,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(4, 35);
+            this.label7.Location = new System.Drawing.Point(4, 33);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(33, 13);
             this.label7.TabIndex = 5;
@@ -494,7 +486,7 @@
             // labelIndexLeft
             // 
             this.labelIndexLeft.AutoSize = true;
-            this.labelIndexLeft.Location = new System.Drawing.Point(71, 35);
+            this.labelIndexLeft.Location = new System.Drawing.Point(68, 33);
             this.labelIndexLeft.Name = "labelIndexLeft";
             this.labelIndexLeft.Size = new System.Drawing.Size(10, 13);
             this.labelIndexLeft.TabIndex = 6;
@@ -503,7 +495,7 @@
             // labelIndexRight
             // 
             this.labelIndexRight.AutoSize = true;
-            this.labelIndexRight.Location = new System.Drawing.Point(138, 35);
+            this.labelIndexRight.Location = new System.Drawing.Point(132, 33);
             this.labelIndexRight.Name = "labelIndexRight";
             this.labelIndexRight.Size = new System.Drawing.Size(10, 13);
             this.labelIndexRight.TabIndex = 7;
@@ -512,7 +504,7 @@
             // labelMiddleLeft
             // 
             this.labelMiddleLeft.AutoSize = true;
-            this.labelMiddleLeft.Location = new System.Drawing.Point(71, 52);
+            this.labelMiddleLeft.Location = new System.Drawing.Point(68, 49);
             this.labelMiddleLeft.Name = "labelMiddleLeft";
             this.labelMiddleLeft.Size = new System.Drawing.Size(10, 13);
             this.labelMiddleLeft.TabIndex = 8;
@@ -521,7 +513,7 @@
             // labelMiddleRight
             // 
             this.labelMiddleRight.AutoSize = true;
-            this.labelMiddleRight.Location = new System.Drawing.Point(138, 52);
+            this.labelMiddleRight.Location = new System.Drawing.Point(132, 49);
             this.labelMiddleRight.Name = "labelMiddleRight";
             this.labelMiddleRight.Size = new System.Drawing.Size(10, 13);
             this.labelMiddleRight.TabIndex = 9;
@@ -530,7 +522,7 @@
             // labelRingLeft
             // 
             this.labelRingLeft.AutoSize = true;
-            this.labelRingLeft.Location = new System.Drawing.Point(71, 69);
+            this.labelRingLeft.Location = new System.Drawing.Point(68, 65);
             this.labelRingLeft.Name = "labelRingLeft";
             this.labelRingLeft.Size = new System.Drawing.Size(10, 13);
             this.labelRingLeft.TabIndex = 10;
@@ -539,7 +531,7 @@
             // labelRingRight
             // 
             this.labelRingRight.AutoSize = true;
-            this.labelRingRight.Location = new System.Drawing.Point(138, 69);
+            this.labelRingRight.Location = new System.Drawing.Point(132, 65);
             this.labelRingRight.Name = "labelRingRight";
             this.labelRingRight.Size = new System.Drawing.Size(10, 13);
             this.labelRingRight.TabIndex = 11;
@@ -548,7 +540,7 @@
             // labelPinkyRight
             // 
             this.labelPinkyRight.AutoSize = true;
-            this.labelPinkyRight.Location = new System.Drawing.Point(138, 86);
+            this.labelPinkyRight.Location = new System.Drawing.Point(132, 81);
             this.labelPinkyRight.Name = "labelPinkyRight";
             this.labelPinkyRight.Size = new System.Drawing.Size(10, 13);
             this.labelPinkyRight.TabIndex = 12;
@@ -557,7 +549,7 @@
             // labelPinkyLeft
             // 
             this.labelPinkyLeft.AutoSize = true;
-            this.labelPinkyLeft.Location = new System.Drawing.Point(71, 86);
+            this.labelPinkyLeft.Location = new System.Drawing.Point(68, 81);
             this.labelPinkyLeft.Name = "labelPinkyLeft";
             this.labelPinkyLeft.Size = new System.Drawing.Size(10, 13);
             this.labelPinkyLeft.TabIndex = 13;
@@ -566,7 +558,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(4, 52);
+            this.label16.Location = new System.Drawing.Point(4, 49);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(38, 13);
             this.label16.TabIndex = 14;
@@ -575,7 +567,7 @@
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(4, 69);
+            this.label17.Location = new System.Drawing.Point(4, 65);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(29, 13);
             this.label17.TabIndex = 15;
@@ -584,7 +576,7 @@
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(4, 86);
+            this.label18.Location = new System.Drawing.Point(4, 81);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(33, 13);
             this.label18.TabIndex = 16;
@@ -593,9 +585,9 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(496, 0);
+            this.label8.Location = new System.Drawing.Point(462, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(91, 12);
+            this.label8.Size = new System.Drawing.Size(91, 13);
             this.label8.TabIndex = 18;
             this.label8.Text = "Gesture Selection";
             // 
@@ -606,8 +598,8 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel4.ColumnCount = 1;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel4.Controls.Add(this.tableLayoutPanel10, 0, 1);
             this.tableLayoutPanel4.Controls.Add(this.tableLayoutPanel9, 0, 3);
-            this.tableLayoutPanel4.Controls.Add(this.tableLayoutPanel5, 0, 1);
             this.tableLayoutPanel4.Controls.Add(this.tableLayoutPanel6, 0, 2);
             this.tableLayoutPanel4.Controls.Add(this.tableLayoutPanel1, 0, 0);
             this.tableLayoutPanel4.Location = new System.Drawing.Point(12, 27);
@@ -1022,6 +1014,165 @@
             this.label5.TabIndex = 3;
             this.label5.Text = "Gesture Settings";
             // 
+            // tableLayoutPanel10
+            // 
+            this.tableLayoutPanel10.ColumnCount = 4;
+            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
+            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
+            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200F));
+            this.tableLayoutPanel10.Controls.Add(this.label8, 1, 0);
+            this.tableLayoutPanel10.Controls.Add(this.label9, 3, 0);
+            this.tableLayoutPanel10.Controls.Add(this.messageBox, 0, 1);
+            this.tableLayoutPanel10.Controls.Add(this.label6, 0, 0);
+            this.tableLayoutPanel10.Controls.Add(this.gestureListBox, 1, 1);
+            this.tableLayoutPanel10.Controls.Add(this.label21, 2, 0);
+            this.tableLayoutPanel10.Controls.Add(this.fingerStatusTable, 3, 1);
+            this.tableLayoutPanel10.Controls.Add(this.indexFingerDetailsTable, 2, 1);
+            this.tableLayoutPanel10.Location = new System.Drawing.Point(3, 274);
+            this.tableLayoutPanel10.Name = "tableLayoutPanel10";
+            this.tableLayoutPanel10.RowCount = 2;
+            this.tableLayoutPanel10.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 15F));
+            this.tableLayoutPanel10.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel10.Size = new System.Drawing.Size(959, 122);
+            this.tableLayoutPanel10.TabIndex = 16;
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(612, 0);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(103, 13);
+            this.label21.TabIndex = 20;
+            this.label21.Text = "Index Finger Details ";
+            // 
+            // indexFingerDetailsTable
+            // 
+            this.indexFingerDetailsTable.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
+            this.indexFingerDetailsTable.ColumnCount = 3;
+            this.indexFingerDetailsTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.indexFingerDetailsTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
+            this.indexFingerDetailsTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
+            this.indexFingerDetailsTable.Controls.Add(this.label22, 0, 1);
+            this.indexFingerDetailsTable.Controls.Add(this.indexSpeedYLabel, 0, 2);
+            this.indexFingerDetailsTable.Controls.Add(this.indexSpeedZLabel, 0, 3);
+            this.indexFingerDetailsTable.Controls.Add(this.label25, 1, 0);
+            this.indexFingerDetailsTable.Controls.Add(this.label26, 2, 0);
+            this.indexFingerDetailsTable.Controls.Add(this.indexSpeedXLabel, 1, 1);
+            this.indexFingerDetailsTable.Controls.Add(this.label28, 1, 2);
+            this.indexFingerDetailsTable.Controls.Add(this.label29, 1, 3);
+            this.indexFingerDetailsTable.Controls.Add(this.indexPositionXLabel, 2, 1);
+            this.indexFingerDetailsTable.Controls.Add(this.indexPositionYLabel, 2, 2);
+            this.indexFingerDetailsTable.Controls.Add(this.indexPositionZLabel, 2, 3);
+            this.indexFingerDetailsTable.Location = new System.Drawing.Point(612, 18);
+            this.indexFingerDetailsTable.Name = "indexFingerDetailsTable";
+            this.indexFingerDetailsTable.RowCount = 4;
+            this.indexFingerDetailsTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.indexFingerDetailsTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.indexFingerDetailsTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.indexFingerDetailsTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.indexFingerDetailsTable.Size = new System.Drawing.Size(144, 100);
+            this.indexFingerDetailsTable.TabIndex = 21;
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(4, 25);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(14, 13);
+            this.label22.TabIndex = 0;
+            this.label22.Text = "X";
+            // 
+            // indexSpeedYLabel
+            // 
+            this.indexSpeedYLabel.AutoSize = true;
+            this.indexSpeedYLabel.Location = new System.Drawing.Point(4, 49);
+            this.indexSpeedYLabel.Name = "indexSpeedYLabel";
+            this.indexSpeedYLabel.Size = new System.Drawing.Size(14, 13);
+            this.indexSpeedYLabel.TabIndex = 1;
+            this.indexSpeedYLabel.Text = "Y";
+            // 
+            // indexSpeedZLabel
+            // 
+            this.indexSpeedZLabel.AutoSize = true;
+            this.indexSpeedZLabel.Location = new System.Drawing.Point(4, 73);
+            this.indexSpeedZLabel.Name = "indexSpeedZLabel";
+            this.indexSpeedZLabel.Size = new System.Drawing.Size(14, 13);
+            this.indexSpeedZLabel.TabIndex = 2;
+            this.indexSpeedZLabel.Text = "Z";
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(33, 1);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(38, 13);
+            this.label25.TabIndex = 3;
+            this.label25.Text = "Speed";
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(90, 1);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(47, 23);
+            this.label26.TabIndex = 4;
+            this.label26.Text = "Position [m]";
+            // 
+            // indexSpeedXLabel
+            // 
+            this.indexSpeedXLabel.AutoSize = true;
+            this.indexSpeedXLabel.Location = new System.Drawing.Point(33, 25);
+            this.indexSpeedXLabel.Name = "indexSpeedXLabel";
+            this.indexSpeedXLabel.Size = new System.Drawing.Size(10, 13);
+            this.indexSpeedXLabel.TabIndex = 5;
+            this.indexSpeedXLabel.Text = "-";
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(33, 49);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(10, 13);
+            this.label28.TabIndex = 6;
+            this.label28.Text = "-";
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(33, 73);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(10, 13);
+            this.label29.TabIndex = 7;
+            this.label29.Text = "-";
+            // 
+            // indexPositionXLabel
+            // 
+            this.indexPositionXLabel.AutoSize = true;
+            this.indexPositionXLabel.Location = new System.Drawing.Point(90, 25);
+            this.indexPositionXLabel.Name = "indexPositionXLabel";
+            this.indexPositionXLabel.Size = new System.Drawing.Size(10, 13);
+            this.indexPositionXLabel.TabIndex = 8;
+            this.indexPositionXLabel.Text = "-";
+            // 
+            // indexPositionYLabel
+            // 
+            this.indexPositionYLabel.AutoSize = true;
+            this.indexPositionYLabel.Location = new System.Drawing.Point(90, 49);
+            this.indexPositionYLabel.Name = "indexPositionYLabel";
+            this.indexPositionYLabel.Size = new System.Drawing.Size(10, 13);
+            this.indexPositionYLabel.TabIndex = 9;
+            this.indexPositionYLabel.Text = "-";
+            // 
+            // indexPositionZLabel
+            // 
+            this.indexPositionZLabel.AutoSize = true;
+            this.indexPositionZLabel.Location = new System.Drawing.Point(90, 73);
+            this.indexPositionZLabel.Name = "indexPositionZLabel";
+            this.indexPositionZLabel.Size = new System.Drawing.Size(10, 13);
+            this.indexPositionZLabel.TabIndex = 10;
+            this.indexPositionZLabel.Text = "-";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1044,8 +1195,6 @@
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
-            this.tableLayoutPanel5.ResumeLayout(false);
-            this.tableLayoutPanel5.PerformLayout();
             this.fingerStatusTable.ResumeLayout(false);
             this.fingerStatusTable.PerformLayout();
             this.tableLayoutPanel4.ResumeLayout(false);
@@ -1069,6 +1218,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.farTrackingDistance)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nearTrackingWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.farTrackingHeight)).EndInit();
+            this.tableLayoutPanel10.ResumeLayout(false);
+            this.tableLayoutPanel10.PerformLayout();
+            this.indexFingerDetailsTable.ResumeLayout(false);
+            this.indexFingerDetailsTable.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1095,7 +1248,6 @@
         private System.Windows.Forms.ToolStripMenuItem live;
         private System.Windows.Forms.ToolStripMenuItem play;
         private System.Windows.Forms.ToolStripMenuItem record;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private System.Windows.Forms.RichTextBox messageBox;
         private System.Windows.Forms.CheckedListBox gestureListBox;
         private System.Windows.Forms.TableLayoutPanel fingerStatusTable;
@@ -1154,5 +1306,19 @@
         private System.Windows.Forms.NumericUpDown nearTrackingWidth;
         private System.Windows.Forms.NumericUpDown farTrackingHeight;
         private System.Windows.Forms.Button defaultGestureSettingsButton;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel10;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.TableLayoutPanel indexFingerDetailsTable;
+        private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.Label indexSpeedYLabel;
+        private System.Windows.Forms.Label indexSpeedZLabel;
+        private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.Label indexSpeedXLabel;
+        private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.Label label29;
+        private System.Windows.Forms.Label indexPositionXLabel;
+        private System.Windows.Forms.Label indexPositionYLabel;
+        private System.Windows.Forms.Label indexPositionZLabel;
     }
 }

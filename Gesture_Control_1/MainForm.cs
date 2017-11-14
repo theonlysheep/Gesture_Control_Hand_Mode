@@ -193,7 +193,7 @@ namespace streams.cs
                 while (!manager.Stop)
                 {
                     getFrameStatus = manager.GetSample(out sample);
-                    if(getFrameStatus == RS.Status.STATUS_EXEC_TIMEOUT || getFrameStatus == RS.Status.STATUS_DEVICE_LOST)
+                    if (getFrameStatus == RS.Status.STATUS_EXEC_TIMEOUT || getFrameStatus == RS.Status.STATUS_DEVICE_LOST)
                     {
                         manager.SetStatus("Camera Error! Timeout or Device lost.");
                         break;
@@ -295,7 +295,7 @@ namespace streams.cs
             closing = true;
             FormClosing -= new FormClosingEventHandler(FormClosingHandler); // Workarond, otherwise Event will keep looping 
             if (thread1 == null) Close(); //If Thread is not activated make Main Thread closing the Window 
-            
+
         }
         #endregion
 
@@ -339,7 +339,8 @@ namespace streams.cs
         {
             manager.Stop = true;
             ResetGesturesList();
-            ResetFingerStatus();
+            ResetFingerFlexStatus();
+            ResetIndexFingerDetails();
         }
 
         private void StreamRadioButton_Click(object sender, EventArgs e)
@@ -451,7 +452,7 @@ namespace streams.cs
                     gestureListBox.Text = "";
                     gestureListBox.Items.Clear();
                     gestureListBox.SelectedIndex = -1;
-                    gestureListBox.Enabled = false;                    
+                    gestureListBox.Enabled = false;
                     gestureListBox.Size = new System.Drawing.Size(100, 20); // ?????????????????
                 }), new object[] { });
         }
@@ -714,7 +715,7 @@ namespace streams.cs
         public void DisplayFingerStatus(bool statusChanged)
         {
             if (statusChanged)
-            {                
+            {
                 fingerStatusTable.Invoke(new DisplayFingerStatusDelegate(delegate ()
                 {
                     for (int hand = 0; hand < handsRecognition.numOfHands; hand++)
@@ -731,8 +732,32 @@ namespace streams.cs
             }
         }
 
+        private delegate void DisplayIndexFingerDetailsDelegate();
+        public void DisplayIndexFingerDetails(Tuple<RS.Point3DF32, RS.Point3DF32> speedPosition)
+        {
+            indexFingerDetailsTable.Invoke(new DisplayIndexFingerDetailsDelegate(delegate ()
+            {
+                int speed = 1;
+                int position = 2;
+                int i = 0;
+
+                indexFingerDetailsTable.GetControlFromPosition(speed,  1).Text = speedPosition.Item1.x.ToString();
+                indexFingerDetailsTable.GetControlFromPosition(speed,  2).Text = speedPosition.Item1.y.ToString();
+                indexFingerDetailsTable.GetControlFromPosition(speed,  3).Text = speedPosition.Item1.z.ToString();
+
+                indexFingerDetailsTable.GetControlFromPosition(position,  1).Text = speedPosition.Item2.x.ToString();
+                indexFingerDetailsTable.GetControlFromPosition(position,  2).Text = speedPosition.Item2.y.ToString();
+                indexFingerDetailsTable.GetControlFromPosition(position,  3).Text = speedPosition.Item2.z.ToString();
+
+
+            }), new object[] { });
+
+        }
+
+
+
         private delegate void ResetFingerStatusDelegate();
-        public void ResetFingerStatus()
+        public void ResetFingerFlexStatus()
         {
             fingerStatusTable.Invoke(new ResetFingerStatusDelegate(delegate ()
             {
@@ -740,7 +765,22 @@ namespace streams.cs
                 {
                     for (int finger = 0; finger < 5; finger++)
                     {
-                        fingerStatusTable.GetControlFromPosition(hand + 1, finger+1).Text = "-";                        
+                        fingerStatusTable.GetControlFromPosition(hand + 1, finger + 1).Text = "-";
+                    }
+                }
+            }), new object[] { });
+        }
+
+        private delegate void ResetIndexFingerDetailsDelegate();
+        public void ResetIndexFingerDetails()
+        {
+            fingerStatusTable.Invoke(new ResetIndexFingerDetailsDelegate(delegate ()
+            {
+                for (int column = 0; column < 2; column++)
+                {
+                    for (int row = 0; row < 3; row++)
+                    {
+                        indexFingerDetailsTable.GetControlFromPosition(column + 1, row + 1).Text = "-";
                     }
                 }
             }), new object[] { });
@@ -769,16 +809,14 @@ namespace streams.cs
             handsRecognition.handModuleSettings.Stabalizer = stabilizer.Enabled;
         }
 
-
         private void defualtCameraSettingsButton_Click(object sender, EventArgs e)
         {
             // Default camera Setting 
-            laserPower.Value =16;
+            laserPower.Value = 16;
             filterOption.Value = 0;
             motionRangeTradeoff.Value = 0;
             depthConfidence.Value = 0;
         }
-       
 
         private void defaultHandModuleSettingsButton_Click(object sender, EventArgs e)
         {
@@ -794,6 +832,11 @@ namespace streams.cs
             farTrackingHeight.Value = 0;
 
             stabilizer.Enabled = true;
+        }
+
+        private void tableLayoutPanel5_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

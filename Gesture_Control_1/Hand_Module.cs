@@ -31,6 +31,12 @@ namespace streams.cs
             new Dictionary<FingerType, FingerFlex>()
         };
 
+        public Dictionary<JointSpeedType, JointData>[] jointsData = new Dictionary<JointSpeedType, JointData>[]
+        {
+            new Dictionary<JointSpeedType, JointData>(),
+            new Dictionary<JointSpeedType, JointData>()
+        };
+
         public int numOfHands = 0;
 
         public enum FingerFlex
@@ -55,7 +61,7 @@ namespace streams.cs
         };
         public HandModuleSettings handModuleSettings = new HandModuleSettings();
 
-        
+
 
         public HandsRecognition(Manager mngr, MainForm frm)
         {
@@ -164,13 +170,21 @@ namespace streams.cs
                 {
                     handData.Update(); //Get newest Data from camera 
                     DisplayPicture(sample.Depth, handData);
-                    if (numOfHands == 0) form.ResetFingerStatus();
+                    if (numOfHands == 0) form.ResetFingerFlexStatus();
 
                     if (handData.NumberOfHands > 0)
                     {
                         DisplayJoints(handData);
                         bool statusChanged = GetFingerFlexState(handData);
-                        form.DisplayFingerStatus(statusChanged);
+                        Tuple<Point3DF32, Point3DF32> speedPosition = GetIndexFingerDetails(handData);
+
+                        // Use Status Changed also for Position Displaying to limit UI updates 
+                        if (statusChanged)
+                        {
+                            form.DisplayFingerStatus(statusChanged);
+                            form.DisplayIndexFingerDetails(speedPosition);
+
+                        }
                     }
                 }
                 form.UpdateResultImage();
@@ -273,15 +287,13 @@ namespace streams.cs
             }
         }
 
-        public bool GetFingerFlexState(HandData handData)
+        public Tuple<Point3DF32, Point3DF32> GetIndexFingerDetails(HandData handData)
         {
             //Get data for two hands 
             var jointDataNodes = new Dictionary<JointType, JointData>[2]; //[Hand]
             var extremityDataNodes = new Dictionary<ExtremityType, ExtremityData>[2]; //[Hand]
-            var fingerData = new Dictionary<FingerType, FingerData>[2]; //[Hand]
             var bodySide = new BodySideType[2];
-            Array fingers = Enum.GetValues(typeof(FingerType));
-            bool statusChanged = false;
+                       
 
             numOfHands = handData.NumberOfHands;
 
@@ -297,14 +309,48 @@ namespace streams.cs
                         //Iterate Joints
                         jointDataNodes[i] = iHand.TrackedJoints;
 
-                        //Iterate Extremiteis
-                        extremityDataNodes[i] = iHand.ExtremityPoints;
+                        ////Iterate Extremiteis
+                        //extremityDataNodes[i] = iHand.ExtremityPoints;
 
+                        //bodySide[i] = iHand.BodySide;
+                    }
+                }
+            } // end iterating over hands
+
+            // Get Index Finger Tip Joint Details 
+            JointData indexJointData = null;
+            jointDataNodes[0].TryGetValue(JointType.JOINT_INDEX_TIP, out indexJointData);
+
+            if (indexJointData != null)
+            {
+                Point3DF32 indexSpeed3D = indexJointData.speed;
+                Point3DF32 indexWorldCoordinates = indexJointData.positionWorld;
+                return new Tuple<Point3DF32, Point3DF32>(indexSpeed3D, indexWorldCoordinates);
+            }
+            else return null;
+            
+        }
+
+        public bool GetFingerFlexState(HandData handData)
+        {
+            //Get data for two hands            
+            var fingerData = new Dictionary<FingerType, FingerData>[2]; //[Hand]
+            Array fingers = Enum.GetValues(typeof(FingerType));
+            bool statusChanged = false;
+
+            numOfHands = handData.NumberOfHands;
+
+            // Iterate over Hands
+            for (int i = 0; i < numOfHands; i++)
+            {
+                //Get hand by time of appearance
+                IHand iHand;
+                if (handData.QueryHandData(AccessOrderType.ACCESS_ORDER_BY_TIME, i, out iHand) == Status.STATUS_NO_ERROR)
+                {
+                    if (iHand != null)
+                    {
                         //Fingers                         
                         fingerData[i] = iHand.FingerData;
-
-                        bodySide[i] = iHand.BodySide;
-
                     }
                 }
 
@@ -349,7 +395,7 @@ namespace streams.cs
         }
 
         public void SetHandModuleParameters()
-        {        
+        {
 
             if (HandConfiguration != null)
             {
@@ -362,8 +408,8 @@ namespace streams.cs
                 // Settings from UI
                 HandConfiguration.EnableJointSpeed(JointType.JOINT_INDEX_TIP, JointSpeedType.JOINT_SPEED_ABSOLUTE, handModuleSettings.JointSpeed);
                 HandConfiguration.StabilizerEnabled = handModuleSettings.Stabalizer;
-               
-               
+
+
                 HandConfiguration.SmoothingValue = handModuleSettings.SmoothingValue; // The value is from 0(not smoothed) to 1(smoothed motion).
 
                 //Set tracking bounds frustum
