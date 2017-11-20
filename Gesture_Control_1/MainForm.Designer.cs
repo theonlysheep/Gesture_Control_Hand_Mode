@@ -75,10 +75,27 @@
             this.label18 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel10 = new System.Windows.Forms.TableLayoutPanel();
+            this.label21 = new System.Windows.Forms.Label();
+            this.indexFingerDetailsTable = new System.Windows.Forms.TableLayoutPanel();
+            this.label22 = new System.Windows.Forms.Label();
+            this.indexSpeedYLabel = new System.Windows.Forms.Label();
+            this.indexSpeedZLabel = new System.Windows.Forms.Label();
+            this.label25 = new System.Windows.Forms.Label();
+            this.label26 = new System.Windows.Forms.Label();
+            this.indexSpeedXLabel = new System.Windows.Forms.Label();
+            this.label28 = new System.Windows.Forms.Label();
+            this.label29 = new System.Windows.Forms.Label();
+            this.indexPositionXLabel = new System.Windows.Forms.Label();
+            this.indexPositionYLabel = new System.Windows.Forms.Label();
+            this.indexPositionZLabel = new System.Windows.Forms.Label();
             this.tableLayoutPanel9 = new System.Windows.Forms.TableLayoutPanel();
             this.stabilizer = new System.Windows.Forms.CheckBox();
             this.defualtCameraSettingsButton = new System.Windows.Forms.Button();
             this.defaultGestureSettingsButton = new System.Windows.Forms.Button();
+            this.tableLayoutPanel11 = new System.Windows.Forms.TableLayoutPanel();
+            this.label30 = new System.Windows.Forms.Label();
+            this.fpsLabel = new System.Windows.Forms.Label();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
             this.laserPower = new System.Windows.Forms.NumericUpDown();
@@ -108,21 +125,13 @@
             this.farTrackingHeight = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
+            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+            this.label24 = new System.Windows.Forms.Label();
+            this.label27 = new System.Windows.Forms.Label();
+            this.confidenceDistance = new System.Windows.Forms.NumericUpDown();
+            this.confidenceStatusLabelLeft = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.tableLayoutPanel10 = new System.Windows.Forms.TableLayoutPanel();
-            this.label21 = new System.Windows.Forms.Label();
-            this.indexFingerDetailsTable = new System.Windows.Forms.TableLayoutPanel();
-            this.label22 = new System.Windows.Forms.Label();
-            this.indexSpeedYLabel = new System.Windows.Forms.Label();
-            this.indexSpeedZLabel = new System.Windows.Forms.Label();
-            this.label25 = new System.Windows.Forms.Label();
-            this.label26 = new System.Windows.Forms.Label();
-            this.indexSpeedXLabel = new System.Windows.Forms.Label();
-            this.label28 = new System.Windows.Forms.Label();
-            this.label29 = new System.Windows.Forms.Label();
-            this.indexPositionXLabel = new System.Windows.Forms.Label();
-            this.indexPositionYLabel = new System.Windows.Forms.Label();
-            this.indexPositionZLabel = new System.Windows.Forms.Label();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.rgbImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.depthImage)).BeginInit();
@@ -133,7 +142,10 @@
             this.tableLayoutPanel1.SuspendLayout();
             this.fingerStatusTable.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
+            this.tableLayoutPanel10.SuspendLayout();
+            this.indexFingerDetailsTable.SuspendLayout();
             this.tableLayoutPanel9.SuspendLayout();
+            this.tableLayoutPanel11.SuspendLayout();
             this.tableLayoutPanel6.SuspendLayout();
             this.tableLayoutPanel7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.laserPower)).BeginInit();
@@ -149,8 +161,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.farTrackingDistance)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nearTrackingWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.farTrackingHeight)).BeginInit();
-            this.tableLayoutPanel10.SuspendLayout();
-            this.indexFingerDetailsTable.SuspendLayout();
+            this.tableLayoutPanel5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.confidenceDistance)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip
@@ -252,19 +264,19 @@
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.Controls.Add(this.buttonStart, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.buttonStop, 1, 0);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(786, 3);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(798, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(170, 27);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(158, 27);
             this.tableLayoutPanel2.TabIndex = 8;
             // 
             // buttonStart
             // 
             this.buttonStart.Location = new System.Drawing.Point(3, 3);
             this.buttonStart.Name = "buttonStart";
-            this.buttonStart.Size = new System.Drawing.Size(79, 21);
+            this.buttonStart.Size = new System.Drawing.Size(73, 21);
             this.buttonStart.TabIndex = 0;
             this.buttonStart.Text = "Start";
             this.buttonStart.UseVisualStyleBackColor = true;
@@ -272,9 +284,9 @@
             // 
             // buttonStop
             // 
-            this.buttonStop.Location = new System.Drawing.Point(88, 3);
+            this.buttonStop.Location = new System.Drawing.Point(82, 3);
             this.buttonStop.Name = "buttonStop";
-            this.buttonStop.Size = new System.Drawing.Size(79, 21);
+            this.buttonStop.Size = new System.Drawing.Size(73, 21);
             this.buttonStop.TabIndex = 1;
             this.buttonStop.Text = "Stop";
             this.buttonStop.UseVisualStyleBackColor = true;
@@ -288,18 +300,18 @@
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel3.Controls.Add(this.radioIR, 1, 0);
             this.tableLayoutPanel3.Controls.Add(this.radioDepth, 0, 0);
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(587, 3);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(480, 3);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 1;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(174, 27);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(153, 27);
             this.tableLayoutPanel3.TabIndex = 10;
             this.tableLayoutPanel3.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel3_Paint);
             // 
             // radioIR
             // 
             this.radioIR.AutoSize = true;
-            this.radioIR.Location = new System.Drawing.Point(90, 3);
+            this.radioIR.Location = new System.Drawing.Point(79, 3);
             this.radioIR.Name = "radioIR";
             this.radioIR.Size = new System.Drawing.Size(36, 17);
             this.radioIR.TabIndex = 1;
@@ -333,7 +345,6 @@
             this.statusStripLabel.Name = "statusStripLabel";
             this.statusStripLabel.Size = new System.Drawing.Size(39, 17);
             this.statusStripLabel.Text = "Ready";
-            this.statusStripLabel.Click += new System.EventHandler(this.toolStripStatusLabel1_Click);
             // 
             // tableLayoutPanel1
             // 
@@ -612,408 +623,6 @@
             this.tableLayoutPanel4.Size = new System.Drawing.Size(965, 567);
             this.tableLayoutPanel4.TabIndex = 15;
             // 
-            // tableLayoutPanel9
-            // 
-            this.tableLayoutPanel9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel9.ColumnCount = 5;
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel9.Controls.Add(this.tableLayoutPanel2, 4, 0);
-            this.tableLayoutPanel9.Controls.Add(this.tableLayoutPanel3, 3, 0);
-            this.tableLayoutPanel9.Controls.Add(this.stabilizer, 2, 0);
-            this.tableLayoutPanel9.Controls.Add(this.defualtCameraSettingsButton, 0, 0);
-            this.tableLayoutPanel9.Controls.Add(this.defaultGestureSettingsButton, 1, 0);
-            this.tableLayoutPanel9.Location = new System.Drawing.Point(3, 531);
-            this.tableLayoutPanel9.Name = "tableLayoutPanel9";
-            this.tableLayoutPanel9.RowCount = 1;
-            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel9.Size = new System.Drawing.Size(959, 33);
-            this.tableLayoutPanel9.TabIndex = 16;
-            // 
-            // stabilizer
-            // 
-            this.stabilizer.AutoSize = true;
-            this.stabilizer.Checked = true;
-            this.stabilizer.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.stabilizer.Location = new System.Drawing.Point(385, 3);
-            this.stabilizer.Name = "stabilizer";
-            this.stabilizer.Size = new System.Drawing.Size(68, 17);
-            this.stabilizer.TabIndex = 4;
-            this.stabilizer.Text = "Stabilizer";
-            this.stabilizer.UseVisualStyleBackColor = true;
-            this.stabilizer.CheckedChanged += new System.EventHandler(this.handModuleSettingsChangedHandler);
-            // 
-            // defualtCameraSettingsButton
-            // 
-            this.defualtCameraSettingsButton.Location = new System.Drawing.Point(3, 3);
-            this.defualtCameraSettingsButton.Name = "defualtCameraSettingsButton";
-            this.defualtCameraSettingsButton.Size = new System.Drawing.Size(140, 23);
-            this.defualtCameraSettingsButton.TabIndex = 11;
-            this.defualtCameraSettingsButton.Text = "Default Camera Settings";
-            this.defualtCameraSettingsButton.UseVisualStyleBackColor = true;
-            this.defualtCameraSettingsButton.Click += new System.EventHandler(this.defualtCameraSettingsButton_Click);
-            // 
-            // defaultGestureSettingsButton
-            // 
-            this.defaultGestureSettingsButton.Location = new System.Drawing.Point(194, 3);
-            this.defaultGestureSettingsButton.Name = "defaultGestureSettingsButton";
-            this.defaultGestureSettingsButton.Size = new System.Drawing.Size(140, 23);
-            this.defaultGestureSettingsButton.TabIndex = 12;
-            this.defaultGestureSettingsButton.Text = "Default Gesture Settings";
-            this.defaultGestureSettingsButton.UseVisualStyleBackColor = true;
-            this.defaultGestureSettingsButton.Click += new System.EventHandler(this.defaultHandModuleSettingsButton_Click);
-            // 
-            // tableLayoutPanel6
-            // 
-            this.tableLayoutPanel6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel6.ColumnCount = 2;
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 66.66666F));
-            this.tableLayoutPanel6.Controls.Add(this.tableLayoutPanel7, 0, 1);
-            this.tableLayoutPanel6.Controls.Add(this.tableLayoutPanel8, 1, 1);
-            this.tableLayoutPanel6.Controls.Add(this.label1, 0, 0);
-            this.tableLayoutPanel6.Controls.Add(this.label5, 1, 0);
-            this.tableLayoutPanel6.Location = new System.Drawing.Point(3, 402);
-            this.tableLayoutPanel6.Name = "tableLayoutPanel6";
-            this.tableLayoutPanel6.RowCount = 2;
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.76471F));
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 88.23529F));
-            this.tableLayoutPanel6.Size = new System.Drawing.Size(959, 122);
-            this.tableLayoutPanel6.TabIndex = 16;
-            // 
-            // tableLayoutPanel7
-            // 
-            this.tableLayoutPanel7.ColumnCount = 2;
-            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel7.Controls.Add(this.laserPower, 1, 0);
-            this.tableLayoutPanel7.Controls.Add(this.filterOption, 1, 1);
-            this.tableLayoutPanel7.Controls.Add(this.motionRangeTradeoff, 1, 2);
-            this.tableLayoutPanel7.Controls.Add(this.depthConfidence, 1, 3);
-            this.tableLayoutPanel7.Controls.Add(this.label10, 0, 0);
-            this.tableLayoutPanel7.Controls.Add(this.label11, 0, 1);
-            this.tableLayoutPanel7.Controls.Add(this.label12, 0, 2);
-            this.tableLayoutPanel7.Controls.Add(this.label13, 0, 3);
-            this.tableLayoutPanel7.Location = new System.Drawing.Point(3, 17);
-            this.tableLayoutPanel7.Name = "tableLayoutPanel7";
-            this.tableLayoutPanel7.RowCount = 4;
-            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel7.Size = new System.Drawing.Size(313, 99);
-            this.tableLayoutPanel7.TabIndex = 0;
-            // 
-            // laserPower
-            // 
-            this.laserPower.Location = new System.Drawing.Point(159, 3);
-            this.laserPower.Maximum = new decimal(new int[] {
-            16,
-            0,
-            0,
-            0});
-            this.laserPower.Name = "laserPower";
-            this.laserPower.Size = new System.Drawing.Size(120, 20);
-            this.laserPower.TabIndex = 0;
-            this.laserPower.Value = new decimal(new int[] {
-            16,
-            0,
-            0,
-            0});
-            this.laserPower.ValueChanged += new System.EventHandler(this.cameraSettingsChangedHandler);
-            // 
-            // filterOption
-            // 
-            this.filterOption.Location = new System.Drawing.Point(159, 27);
-            this.filterOption.Maximum = new decimal(new int[] {
-            7,
-            0,
-            0,
-            0});
-            this.filterOption.Name = "filterOption";
-            this.filterOption.Size = new System.Drawing.Size(120, 20);
-            this.filterOption.TabIndex = 1;
-            this.filterOption.ValueChanged += new System.EventHandler(this.cameraSettingsChangedHandler);
-            // 
-            // motionRangeTradeoff
-            // 
-            this.motionRangeTradeoff.Location = new System.Drawing.Point(159, 51);
-            this.motionRangeTradeoff.Name = "motionRangeTradeoff";
-            this.motionRangeTradeoff.Size = new System.Drawing.Size(120, 20);
-            this.motionRangeTradeoff.TabIndex = 2;
-            this.motionRangeTradeoff.ValueChanged += new System.EventHandler(this.cameraSettingsChangedHandler);
-            // 
-            // depthConfidence
-            // 
-            this.depthConfidence.Location = new System.Drawing.Point(159, 75);
-            this.depthConfidence.Maximum = new decimal(new int[] {
-            15,
-            0,
-            0,
-            0});
-            this.depthConfidence.Name = "depthConfidence";
-            this.depthConfidence.Size = new System.Drawing.Size(120, 20);
-            this.depthConfidence.TabIndex = 3;
-            this.depthConfidence.ValueChanged += new System.EventHandler(this.cameraSettingsChangedHandler);
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(3, 0);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(69, 13);
-            this.label10.TabIndex = 4;
-            this.label10.Text = "Laser Power:";
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(3, 24);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(66, 13);
-            this.label11.TabIndex = 5;
-            this.label11.Text = "Filter Option:";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(3, 48);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(128, 13);
-            this.label12.TabIndex = 6;
-            this.label12.Text = "Motion / Range Tradeoff:";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(3, 72);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(96, 26);
-            this.label13.TabIndex = 7;
-            this.label13.Text = "Depth Confidence Threshould:";
-            // 
-            // tableLayoutPanel8
-            // 
-            this.tableLayoutPanel8.ColumnCount = 4;
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel8.Controls.Add(this.jointSpeed, 1, 0);
-            this.tableLayoutPanel8.Controls.Add(this.smoothingValue, 1, 1);
-            this.tableLayoutPanel8.Controls.Add(this.jointSpeedlabel, 0, 0);
-            this.tableLayoutPanel8.Controls.Add(this.smoothingValueLabel, 0, 1);
-            this.tableLayoutPanel8.Controls.Add(this.maxFoldnessFactor, 1, 2);
-            this.tableLayoutPanel8.Controls.Add(this.minExtendedFactor, 1, 3);
-            this.tableLayoutPanel8.Controls.Add(this.maxFoldnessFactorLabel, 0, 2);
-            this.tableLayoutPanel8.Controls.Add(this.minExtendedFactorLabel, 0, 3);
-            this.tableLayoutPanel8.Controls.Add(this.label14, 2, 0);
-            this.tableLayoutPanel8.Controls.Add(this.label15, 2, 1);
-            this.tableLayoutPanel8.Controls.Add(this.label19, 2, 2);
-            this.tableLayoutPanel8.Controls.Add(this.label20, 2, 3);
-            this.tableLayoutPanel8.Controls.Add(this.nearTrackingDistance, 3, 0);
-            this.tableLayoutPanel8.Controls.Add(this.farTrackingDistance, 3, 1);
-            this.tableLayoutPanel8.Controls.Add(this.nearTrackingWidth, 3, 2);
-            this.tableLayoutPanel8.Controls.Add(this.farTrackingHeight, 3, 3);
-            this.tableLayoutPanel8.Location = new System.Drawing.Point(322, 17);
-            this.tableLayoutPanel8.Name = "tableLayoutPanel8";
-            this.tableLayoutPanel8.RowCount = 4;
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel8.Size = new System.Drawing.Size(634, 99);
-            this.tableLayoutPanel8.TabIndex = 1;
-            // 
-            // jointSpeed
-            // 
-            this.jointSpeed.Location = new System.Drawing.Point(161, 3);
-            this.jointSpeed.Name = "jointSpeed";
-            this.jointSpeed.Size = new System.Drawing.Size(120, 20);
-            this.jointSpeed.TabIndex = 0;
-            this.jointSpeed.Value = new decimal(new int[] {
-            20,
-            0,
-            0,
-            0});
-            this.jointSpeed.ValueChanged += new System.EventHandler(this.handModuleSettingsChangedHandler);
-            // 
-            // smoothingValue
-            // 
-            this.smoothingValue.DecimalPlaces = 1;
-            this.smoothingValue.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.smoothingValue.Location = new System.Drawing.Point(161, 27);
-            this.smoothingValue.Maximum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.smoothingValue.Name = "smoothingValue";
-            this.smoothingValue.Size = new System.Drawing.Size(120, 20);
-            this.smoothingValue.TabIndex = 1;
-            this.smoothingValue.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.smoothingValue.ValueChanged += new System.EventHandler(this.handModuleSettingsChangedHandler);
-            // 
-            // jointSpeedlabel
-            // 
-            this.jointSpeedlabel.AutoSize = true;
-            this.jointSpeedlabel.Location = new System.Drawing.Point(3, 0);
-            this.jointSpeedlabel.Name = "jointSpeedlabel";
-            this.jointSpeedlabel.Size = new System.Drawing.Size(134, 24);
-            this.jointSpeedlabel.TabIndex = 2;
-            this.jointSpeedlabel.Text = "Joint Speed avarage Time [ms]:";
-            // 
-            // smoothingValueLabel
-            // 
-            this.smoothingValueLabel.AutoSize = true;
-            this.smoothingValueLabel.Location = new System.Drawing.Point(3, 24);
-            this.smoothingValueLabel.Name = "smoothingValueLabel";
-            this.smoothingValueLabel.Size = new System.Drawing.Size(90, 13);
-            this.smoothingValueLabel.TabIndex = 3;
-            this.smoothingValueLabel.Text = "Smoothing Value:";
-            // 
-            // maxFoldnessFactor
-            // 
-            this.maxFoldnessFactor.Location = new System.Drawing.Point(161, 51);
-            this.maxFoldnessFactor.Name = "maxFoldnessFactor";
-            this.maxFoldnessFactor.Size = new System.Drawing.Size(120, 20);
-            this.maxFoldnessFactor.TabIndex = 5;
-            this.maxFoldnessFactor.Value = new decimal(new int[] {
-            20,
-            0,
-            0,
-            0});
-            this.maxFoldnessFactor.ValueChanged += new System.EventHandler(this.handModuleSettingsChangedHandler);
-            // 
-            // minExtendedFactor
-            // 
-            this.minExtendedFactor.Location = new System.Drawing.Point(161, 75);
-            this.minExtendedFactor.Name = "minExtendedFactor";
-            this.minExtendedFactor.Size = new System.Drawing.Size(120, 20);
-            this.minExtendedFactor.TabIndex = 6;
-            this.minExtendedFactor.Value = new decimal(new int[] {
-            80,
-            0,
-            0,
-            0});
-            this.minExtendedFactor.ValueChanged += new System.EventHandler(this.handModuleSettingsChangedHandler);
-            // 
-            // maxFoldnessFactorLabel
-            // 
-            this.maxFoldnessFactorLabel.AutoSize = true;
-            this.maxFoldnessFactorLabel.Location = new System.Drawing.Point(3, 48);
-            this.maxFoldnessFactorLabel.Name = "maxFoldnessFactorLabel";
-            this.maxFoldnessFactorLabel.Size = new System.Drawing.Size(105, 13);
-            this.maxFoldnessFactorLabel.TabIndex = 7;
-            this.maxFoldnessFactorLabel.Text = "Finger Folded Offset:";
-            // 
-            // minExtendedFactorLabel
-            // 
-            this.minExtendedFactorLabel.AutoSize = true;
-            this.minExtendedFactorLabel.Location = new System.Drawing.Point(3, 72);
-            this.minExtendedFactorLabel.Name = "minExtendedFactorLabel";
-            this.minExtendedFactorLabel.Size = new System.Drawing.Size(118, 13);
-            this.minExtendedFactorLabel.TabIndex = 8;
-            this.minExtendedFactorLabel.Text = "Finger Extended Offset:";
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(319, 0);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(136, 13);
-            this.label14.TabIndex = 12;
-            this.label14.Text = "Nearest Tracking Dist. [cm]";
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(319, 24);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(137, 13);
-            this.label15.TabIndex = 13;
-            this.label15.Text = "Furthest Tracking Dist. [cm]";
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(319, 48);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(143, 13);
-            this.label19.TabIndex = 14;
-            this.label19.Text = "Nearest Tracking Width [cm]";
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(319, 72);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(147, 13);
-            this.label20.TabIndex = 15;
-            this.label20.Text = "Furthest Tracking Height [cm]";
-            // 
-            // nearTrackingDistance
-            // 
-            this.nearTrackingDistance.Location = new System.Drawing.Point(477, 3);
-            this.nearTrackingDistance.Name = "nearTrackingDistance";
-            this.nearTrackingDistance.Size = new System.Drawing.Size(120, 20);
-            this.nearTrackingDistance.TabIndex = 16;
-            this.nearTrackingDistance.ValueChanged += new System.EventHandler(this.handModuleSettingsChangedHandler);
-            // 
-            // farTrackingDistance
-            // 
-            this.farTrackingDistance.Location = new System.Drawing.Point(477, 27);
-            this.farTrackingDistance.Name = "farTrackingDistance";
-            this.farTrackingDistance.Size = new System.Drawing.Size(120, 20);
-            this.farTrackingDistance.TabIndex = 17;
-            this.farTrackingDistance.ValueChanged += new System.EventHandler(this.handModuleSettingsChangedHandler);
-            // 
-            // nearTrackingWidth
-            // 
-            this.nearTrackingWidth.Location = new System.Drawing.Point(477, 51);
-            this.nearTrackingWidth.Name = "nearTrackingWidth";
-            this.nearTrackingWidth.Size = new System.Drawing.Size(120, 20);
-            this.nearTrackingWidth.TabIndex = 18;
-            this.nearTrackingWidth.ValueChanged += new System.EventHandler(this.handModuleSettingsChangedHandler);
-            // 
-            // farTrackingHeight
-            // 
-            this.farTrackingHeight.Location = new System.Drawing.Point(477, 75);
-            this.farTrackingHeight.Name = "farTrackingHeight";
-            this.farTrackingHeight.Size = new System.Drawing.Size(120, 20);
-            this.farTrackingHeight.TabIndex = 19;
-            this.farTrackingHeight.ValueChanged += new System.EventHandler(this.handModuleSettingsChangedHandler);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(84, 13);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Camera Settings";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(322, 0);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(85, 13);
-            this.label5.TabIndex = 3;
-            this.label5.Text = "Gesture Settings";
-            // 
             // tableLayoutPanel10
             // 
             this.tableLayoutPanel10.ColumnCount = 4;
@@ -1067,17 +676,17 @@
             this.indexFingerDetailsTable.Location = new System.Drawing.Point(612, 18);
             this.indexFingerDetailsTable.Name = "indexFingerDetailsTable";
             this.indexFingerDetailsTable.RowCount = 4;
-            this.indexFingerDetailsTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.indexFingerDetailsTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.indexFingerDetailsTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.indexFingerDetailsTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.indexFingerDetailsTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 28.57143F));
+            this.indexFingerDetailsTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 23.80952F));
+            this.indexFingerDetailsTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 23.80952F));
+            this.indexFingerDetailsTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 23.80952F));
             this.indexFingerDetailsTable.Size = new System.Drawing.Size(144, 100);
             this.indexFingerDetailsTable.TabIndex = 21;
             // 
             // label22
             // 
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(4, 25);
+            this.label22.Location = new System.Drawing.Point(4, 29);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(14, 13);
             this.label22.TabIndex = 0;
@@ -1086,7 +695,7 @@
             // indexSpeedYLabel
             // 
             this.indexSpeedYLabel.AutoSize = true;
-            this.indexSpeedYLabel.Location = new System.Drawing.Point(4, 49);
+            this.indexSpeedYLabel.Location = new System.Drawing.Point(4, 52);
             this.indexSpeedYLabel.Name = "indexSpeedYLabel";
             this.indexSpeedYLabel.Size = new System.Drawing.Size(14, 13);
             this.indexSpeedYLabel.TabIndex = 1;
@@ -1095,7 +704,7 @@
             // indexSpeedZLabel
             // 
             this.indexSpeedZLabel.AutoSize = true;
-            this.indexSpeedZLabel.Location = new System.Drawing.Point(4, 73);
+            this.indexSpeedZLabel.Location = new System.Drawing.Point(4, 75);
             this.indexSpeedZLabel.Name = "indexSpeedZLabel";
             this.indexSpeedZLabel.Size = new System.Drawing.Size(14, 13);
             this.indexSpeedZLabel.TabIndex = 2;
@@ -1106,23 +715,23 @@
             this.label25.AutoSize = true;
             this.label25.Location = new System.Drawing.Point(33, 1);
             this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(38, 13);
+            this.label25.Size = new System.Drawing.Size(41, 26);
             this.label25.TabIndex = 3;
-            this.label25.Text = "Speed";
+            this.label25.Text = "Speed [m/s]";
             // 
             // label26
             // 
             this.label26.AutoSize = true;
             this.label26.Location = new System.Drawing.Point(90, 1);
             this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(47, 23);
+            this.label26.Size = new System.Drawing.Size(47, 26);
             this.label26.TabIndex = 4;
             this.label26.Text = "Position [m]";
             // 
             // indexSpeedXLabel
             // 
             this.indexSpeedXLabel.AutoSize = true;
-            this.indexSpeedXLabel.Location = new System.Drawing.Point(33, 25);
+            this.indexSpeedXLabel.Location = new System.Drawing.Point(33, 29);
             this.indexSpeedXLabel.Name = "indexSpeedXLabel";
             this.indexSpeedXLabel.Size = new System.Drawing.Size(10, 13);
             this.indexSpeedXLabel.TabIndex = 5;
@@ -1131,7 +740,7 @@
             // label28
             // 
             this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(33, 49);
+            this.label28.Location = new System.Drawing.Point(33, 52);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(10, 13);
             this.label28.TabIndex = 6;
@@ -1140,7 +749,7 @@
             // label29
             // 
             this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(33, 73);
+            this.label29.Location = new System.Drawing.Point(33, 75);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(10, 13);
             this.label29.TabIndex = 7;
@@ -1149,7 +758,7 @@
             // indexPositionXLabel
             // 
             this.indexPositionXLabel.AutoSize = true;
-            this.indexPositionXLabel.Location = new System.Drawing.Point(90, 25);
+            this.indexPositionXLabel.Location = new System.Drawing.Point(90, 29);
             this.indexPositionXLabel.Name = "indexPositionXLabel";
             this.indexPositionXLabel.Size = new System.Drawing.Size(10, 13);
             this.indexPositionXLabel.TabIndex = 8;
@@ -1158,7 +767,7 @@
             // indexPositionYLabel
             // 
             this.indexPositionYLabel.AutoSize = true;
-            this.indexPositionYLabel.Location = new System.Drawing.Point(90, 49);
+            this.indexPositionYLabel.Location = new System.Drawing.Point(90, 52);
             this.indexPositionYLabel.Name = "indexPositionYLabel";
             this.indexPositionYLabel.Size = new System.Drawing.Size(10, 13);
             this.indexPositionYLabel.TabIndex = 9;
@@ -1167,11 +776,519 @@
             // indexPositionZLabel
             // 
             this.indexPositionZLabel.AutoSize = true;
-            this.indexPositionZLabel.Location = new System.Drawing.Point(90, 73);
+            this.indexPositionZLabel.Location = new System.Drawing.Point(90, 75);
             this.indexPositionZLabel.Name = "indexPositionZLabel";
             this.indexPositionZLabel.Size = new System.Drawing.Size(10, 13);
             this.indexPositionZLabel.TabIndex = 10;
             this.indexPositionZLabel.Text = "-";
+            // 
+            // tableLayoutPanel9
+            // 
+            this.tableLayoutPanel9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel9.ColumnCount = 6;
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel9.Controls.Add(this.tableLayoutPanel3, 3, 0);
+            this.tableLayoutPanel9.Controls.Add(this.stabilizer, 2, 0);
+            this.tableLayoutPanel9.Controls.Add(this.defualtCameraSettingsButton, 0, 0);
+            this.tableLayoutPanel9.Controls.Add(this.defaultGestureSettingsButton, 1, 0);
+            this.tableLayoutPanel9.Controls.Add(this.tableLayoutPanel2, 5, 0);
+            this.tableLayoutPanel9.Controls.Add(this.tableLayoutPanel11, 4, 0);
+            this.tableLayoutPanel9.Location = new System.Drawing.Point(3, 531);
+            this.tableLayoutPanel9.Name = "tableLayoutPanel9";
+            this.tableLayoutPanel9.RowCount = 1;
+            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel9.Size = new System.Drawing.Size(959, 33);
+            this.tableLayoutPanel9.TabIndex = 16;
+            // 
+            // stabilizer
+            // 
+            this.stabilizer.AutoSize = true;
+            this.stabilizer.Checked = true;
+            this.stabilizer.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.stabilizer.Location = new System.Drawing.Point(321, 3);
+            this.stabilizer.Name = "stabilizer";
+            this.stabilizer.Size = new System.Drawing.Size(68, 17);
+            this.stabilizer.TabIndex = 4;
+            this.stabilizer.Text = "Stabilizer";
+            this.stabilizer.UseVisualStyleBackColor = true;
+            this.stabilizer.CheckedChanged += new System.EventHandler(this.handModuleSettingsChangedHandler);
+            // 
+            // defualtCameraSettingsButton
+            // 
+            this.defualtCameraSettingsButton.Location = new System.Drawing.Point(3, 3);
+            this.defualtCameraSettingsButton.Name = "defualtCameraSettingsButton";
+            this.defualtCameraSettingsButton.Size = new System.Drawing.Size(140, 23);
+            this.defualtCameraSettingsButton.TabIndex = 11;
+            this.defualtCameraSettingsButton.Text = "Default Camera Settings";
+            this.defualtCameraSettingsButton.UseVisualStyleBackColor = true;
+            this.defualtCameraSettingsButton.Click += new System.EventHandler(this.defualtCameraSettingsButton_Click);
+            // 
+            // defaultGestureSettingsButton
+            // 
+            this.defaultGestureSettingsButton.Location = new System.Drawing.Point(162, 3);
+            this.defaultGestureSettingsButton.Name = "defaultGestureSettingsButton";
+            this.defaultGestureSettingsButton.Size = new System.Drawing.Size(140, 23);
+            this.defaultGestureSettingsButton.TabIndex = 12;
+            this.defaultGestureSettingsButton.Text = "Default Gesture Settings";
+            this.defaultGestureSettingsButton.UseVisualStyleBackColor = true;
+            this.defaultGestureSettingsButton.Click += new System.EventHandler(this.defaultHandModuleSettingsButton_Click);
+            // 
+            // tableLayoutPanel11
+            // 
+            this.tableLayoutPanel11.ColumnCount = 2;
+            this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel11.Controls.Add(this.label30, 0, 0);
+            this.tableLayoutPanel11.Controls.Add(this.fpsLabel, 1, 0);
+            this.tableLayoutPanel11.Location = new System.Drawing.Point(639, 3);
+            this.tableLayoutPanel11.Name = "tableLayoutPanel11";
+            this.tableLayoutPanel11.RowCount = 1;
+            this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel11.Size = new System.Drawing.Size(153, 27);
+            this.tableLayoutPanel11.TabIndex = 13;
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Location = new System.Drawing.Point(3, 0);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(60, 13);
+            this.label30.TabIndex = 0;
+            this.label30.Text = "Frames / s:";
+            // 
+            // fpsLabel
+            // 
+            this.fpsLabel.AutoSize = true;
+            this.fpsLabel.Location = new System.Drawing.Point(79, 0);
+            this.fpsLabel.Name = "fpsLabel";
+            this.fpsLabel.Size = new System.Drawing.Size(10, 13);
+            this.fpsLabel.TabIndex = 1;
+            this.fpsLabel.Text = "-";
+            // 
+            // tableLayoutPanel6
+            // 
+            this.tableLayoutPanel6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel6.ColumnCount = 3;
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel6.Controls.Add(this.tableLayoutPanel7, 0, 1);
+            this.tableLayoutPanel6.Controls.Add(this.tableLayoutPanel8, 1, 1);
+            this.tableLayoutPanel6.Controls.Add(this.label1, 0, 0);
+            this.tableLayoutPanel6.Controls.Add(this.label5, 1, 0);
+            this.tableLayoutPanel6.Controls.Add(this.label23, 2, 0);
+            this.tableLayoutPanel6.Controls.Add(this.tableLayoutPanel5, 2, 1);
+            this.tableLayoutPanel6.Location = new System.Drawing.Point(3, 402);
+            this.tableLayoutPanel6.Name = "tableLayoutPanel6";
+            this.tableLayoutPanel6.RowCount = 2;
+            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.76471F));
+            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 88.23529F));
+            this.tableLayoutPanel6.Size = new System.Drawing.Size(959, 122);
+            this.tableLayoutPanel6.TabIndex = 16;
+            // 
+            // tableLayoutPanel7
+            // 
+            this.tableLayoutPanel7.ColumnCount = 2;
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 80.25751F));
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 19.74249F));
+            this.tableLayoutPanel7.Controls.Add(this.laserPower, 1, 0);
+            this.tableLayoutPanel7.Controls.Add(this.filterOption, 1, 1);
+            this.tableLayoutPanel7.Controls.Add(this.motionRangeTradeoff, 1, 2);
+            this.tableLayoutPanel7.Controls.Add(this.depthConfidence, 1, 3);
+            this.tableLayoutPanel7.Controls.Add(this.label10, 0, 0);
+            this.tableLayoutPanel7.Controls.Add(this.label11, 0, 1);
+            this.tableLayoutPanel7.Controls.Add(this.label12, 0, 2);
+            this.tableLayoutPanel7.Controls.Add(this.label13, 0, 3);
+            this.tableLayoutPanel7.Location = new System.Drawing.Point(3, 17);
+            this.tableLayoutPanel7.Name = "tableLayoutPanel7";
+            this.tableLayoutPanel7.RowCount = 4;
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel7.Size = new System.Drawing.Size(233, 99);
+            this.tableLayoutPanel7.TabIndex = 0;
+            // 
+            // laserPower
+            // 
+            this.laserPower.Location = new System.Drawing.Point(189, 3);
+            this.laserPower.Maximum = new decimal(new int[] {
+            16,
+            0,
+            0,
+            0});
+            this.laserPower.Name = "laserPower";
+            this.laserPower.Size = new System.Drawing.Size(40, 20);
+            this.laserPower.TabIndex = 0;
+            this.laserPower.Value = new decimal(new int[] {
+            16,
+            0,
+            0,
+            0});
+            this.laserPower.ValueChanged += new System.EventHandler(this.cameraSettingsChangedHandler);
+            // 
+            // filterOption
+            // 
+            this.filterOption.Location = new System.Drawing.Point(189, 27);
+            this.filterOption.Maximum = new decimal(new int[] {
+            7,
+            0,
+            0,
+            0});
+            this.filterOption.Name = "filterOption";
+            this.filterOption.Size = new System.Drawing.Size(40, 20);
+            this.filterOption.TabIndex = 1;
+            this.filterOption.ValueChanged += new System.EventHandler(this.cameraSettingsChangedHandler);
+            // 
+            // motionRangeTradeoff
+            // 
+            this.motionRangeTradeoff.Location = new System.Drawing.Point(189, 51);
+            this.motionRangeTradeoff.Name = "motionRangeTradeoff";
+            this.motionRangeTradeoff.Size = new System.Drawing.Size(40, 20);
+            this.motionRangeTradeoff.TabIndex = 2;
+            this.motionRangeTradeoff.ValueChanged += new System.EventHandler(this.cameraSettingsChangedHandler);
+            // 
+            // depthConfidence
+            // 
+            this.depthConfidence.Location = new System.Drawing.Point(189, 75);
+            this.depthConfidence.Maximum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            this.depthConfidence.Name = "depthConfidence";
+            this.depthConfidence.Size = new System.Drawing.Size(40, 20);
+            this.depthConfidence.TabIndex = 3;
+            this.depthConfidence.ValueChanged += new System.EventHandler(this.cameraSettingsChangedHandler);
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(3, 0);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(69, 13);
+            this.label10.TabIndex = 4;
+            this.label10.Text = "Laser Power:";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(3, 24);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(66, 13);
+            this.label11.TabIndex = 5;
+            this.label11.Text = "Filter Option:";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(3, 48);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(128, 13);
+            this.label12.TabIndex = 6;
+            this.label12.Text = "Motion / Range Tradeoff:";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(3, 72);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(152, 13);
+            this.label13.TabIndex = 7;
+            this.label13.Text = "Depth Confidence Threshould:";
+            // 
+            // tableLayoutPanel8
+            // 
+            this.tableLayoutPanel8.ColumnCount = 4;
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 39.95772F));
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 9.725159F));
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40.38055F));
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 9.725159F));
+            this.tableLayoutPanel8.Controls.Add(this.jointSpeed, 1, 0);
+            this.tableLayoutPanel8.Controls.Add(this.smoothingValue, 1, 1);
+            this.tableLayoutPanel8.Controls.Add(this.jointSpeedlabel, 0, 0);
+            this.tableLayoutPanel8.Controls.Add(this.smoothingValueLabel, 0, 1);
+            this.tableLayoutPanel8.Controls.Add(this.maxFoldnessFactor, 1, 2);
+            this.tableLayoutPanel8.Controls.Add(this.minExtendedFactor, 1, 3);
+            this.tableLayoutPanel8.Controls.Add(this.maxFoldnessFactorLabel, 0, 2);
+            this.tableLayoutPanel8.Controls.Add(this.minExtendedFactorLabel, 0, 3);
+            this.tableLayoutPanel8.Controls.Add(this.label14, 2, 0);
+            this.tableLayoutPanel8.Controls.Add(this.label15, 2, 1);
+            this.tableLayoutPanel8.Controls.Add(this.label19, 2, 2);
+            this.tableLayoutPanel8.Controls.Add(this.label20, 2, 3);
+            this.tableLayoutPanel8.Controls.Add(this.nearTrackingDistance, 3, 0);
+            this.tableLayoutPanel8.Controls.Add(this.farTrackingDistance, 3, 1);
+            this.tableLayoutPanel8.Controls.Add(this.nearTrackingWidth, 3, 2);
+            this.tableLayoutPanel8.Controls.Add(this.farTrackingHeight, 3, 3);
+            this.tableLayoutPanel8.Location = new System.Drawing.Point(242, 17);
+            this.tableLayoutPanel8.Name = "tableLayoutPanel8";
+            this.tableLayoutPanel8.RowCount = 4;
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel8.Size = new System.Drawing.Size(473, 99);
+            this.tableLayoutPanel8.TabIndex = 1;
+            // 
+            // jointSpeed
+            // 
+            this.jointSpeed.Location = new System.Drawing.Point(192, 3);
+            this.jointSpeed.Name = "jointSpeed";
+            this.jointSpeed.Size = new System.Drawing.Size(40, 20);
+            this.jointSpeed.TabIndex = 0;
+            this.jointSpeed.Value = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+            this.jointSpeed.ValueChanged += new System.EventHandler(this.handModuleSettingsChangedHandler);
+            // 
+            // smoothingValue
+            // 
+            this.smoothingValue.DecimalPlaces = 1;
+            this.smoothingValue.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.smoothingValue.Location = new System.Drawing.Point(192, 27);
+            this.smoothingValue.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.smoothingValue.Name = "smoothingValue";
+            this.smoothingValue.Size = new System.Drawing.Size(40, 20);
+            this.smoothingValue.TabIndex = 1;
+            this.smoothingValue.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.smoothingValue.ValueChanged += new System.EventHandler(this.handModuleSettingsChangedHandler);
+            // 
+            // jointSpeedlabel
+            // 
+            this.jointSpeedlabel.AutoSize = true;
+            this.jointSpeedlabel.Location = new System.Drawing.Point(3, 0);
+            this.jointSpeedlabel.Name = "jointSpeedlabel";
+            this.jointSpeedlabel.Size = new System.Drawing.Size(156, 13);
+            this.jointSpeedlabel.TabIndex = 2;
+            this.jointSpeedlabel.Text = "Joint Speed avarage Time [ms]:";
+            // 
+            // smoothingValueLabel
+            // 
+            this.smoothingValueLabel.AutoSize = true;
+            this.smoothingValueLabel.Location = new System.Drawing.Point(3, 24);
+            this.smoothingValueLabel.Name = "smoothingValueLabel";
+            this.smoothingValueLabel.Size = new System.Drawing.Size(90, 13);
+            this.smoothingValueLabel.TabIndex = 3;
+            this.smoothingValueLabel.Text = "Smoothing Value:";
+            // 
+            // maxFoldnessFactor
+            // 
+            this.maxFoldnessFactor.Location = new System.Drawing.Point(192, 51);
+            this.maxFoldnessFactor.Name = "maxFoldnessFactor";
+            this.maxFoldnessFactor.Size = new System.Drawing.Size(40, 20);
+            this.maxFoldnessFactor.TabIndex = 5;
+            this.maxFoldnessFactor.Value = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+            this.maxFoldnessFactor.ValueChanged += new System.EventHandler(this.handModuleSettingsChangedHandler);
+            // 
+            // minExtendedFactor
+            // 
+            this.minExtendedFactor.Location = new System.Drawing.Point(192, 75);
+            this.minExtendedFactor.Name = "minExtendedFactor";
+            this.minExtendedFactor.Size = new System.Drawing.Size(40, 20);
+            this.minExtendedFactor.TabIndex = 6;
+            this.minExtendedFactor.Value = new decimal(new int[] {
+            80,
+            0,
+            0,
+            0});
+            this.minExtendedFactor.ValueChanged += new System.EventHandler(this.handModuleSettingsChangedHandler);
+            // 
+            // maxFoldnessFactorLabel
+            // 
+            this.maxFoldnessFactorLabel.AutoSize = true;
+            this.maxFoldnessFactorLabel.Location = new System.Drawing.Point(3, 48);
+            this.maxFoldnessFactorLabel.Name = "maxFoldnessFactorLabel";
+            this.maxFoldnessFactorLabel.Size = new System.Drawing.Size(105, 13);
+            this.maxFoldnessFactorLabel.TabIndex = 7;
+            this.maxFoldnessFactorLabel.Text = "Finger Folded Offset:";
+            // 
+            // minExtendedFactorLabel
+            // 
+            this.minExtendedFactorLabel.AutoSize = true;
+            this.minExtendedFactorLabel.Location = new System.Drawing.Point(3, 72);
+            this.minExtendedFactorLabel.Name = "minExtendedFactorLabel";
+            this.minExtendedFactorLabel.Size = new System.Drawing.Size(118, 13);
+            this.minExtendedFactorLabel.TabIndex = 8;
+            this.minExtendedFactorLabel.Text = "Finger Extended Offset:";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(238, 0);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(136, 13);
+            this.label14.TabIndex = 12;
+            this.label14.Text = "Nearest Tracking Dist. [cm]";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(238, 24);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(137, 13);
+            this.label15.TabIndex = 13;
+            this.label15.Text = "Furthest Tracking Dist. [cm]";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(238, 48);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(143, 13);
+            this.label19.TabIndex = 14;
+            this.label19.Text = "Nearest Tracking Width [cm]";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(238, 72);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(147, 13);
+            this.label20.TabIndex = 15;
+            this.label20.Text = "Furthest Tracking Height [cm]";
+            // 
+            // nearTrackingDistance
+            // 
+            this.nearTrackingDistance.Location = new System.Drawing.Point(429, 3);
+            this.nearTrackingDistance.Name = "nearTrackingDistance";
+            this.nearTrackingDistance.Size = new System.Drawing.Size(40, 20);
+            this.nearTrackingDistance.TabIndex = 16;
+            this.nearTrackingDistance.ValueChanged += new System.EventHandler(this.handModuleSettingsChangedHandler);
+            // 
+            // farTrackingDistance
+            // 
+            this.farTrackingDistance.Location = new System.Drawing.Point(429, 27);
+            this.farTrackingDistance.Name = "farTrackingDistance";
+            this.farTrackingDistance.Size = new System.Drawing.Size(40, 20);
+            this.farTrackingDistance.TabIndex = 17;
+            this.farTrackingDistance.ValueChanged += new System.EventHandler(this.handModuleSettingsChangedHandler);
+            // 
+            // nearTrackingWidth
+            // 
+            this.nearTrackingWidth.Location = new System.Drawing.Point(429, 51);
+            this.nearTrackingWidth.Name = "nearTrackingWidth";
+            this.nearTrackingWidth.Size = new System.Drawing.Size(40, 20);
+            this.nearTrackingWidth.TabIndex = 18;
+            this.nearTrackingWidth.ValueChanged += new System.EventHandler(this.handModuleSettingsChangedHandler);
+            // 
+            // farTrackingHeight
+            // 
+            this.farTrackingHeight.Location = new System.Drawing.Point(429, 75);
+            this.farTrackingHeight.Name = "farTrackingHeight";
+            this.farTrackingHeight.Size = new System.Drawing.Size(40, 20);
+            this.farTrackingHeight.TabIndex = 19;
+            this.farTrackingHeight.ValueChanged += new System.EventHandler(this.handModuleSettingsChangedHandler);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(3, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(84, 13);
+            this.label1.TabIndex = 2;
+            this.label1.Text = "Camera Settings";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(242, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(85, 13);
+            this.label5.TabIndex = 3;
+            this.label5.Text = "Gesture Settings";
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(721, 0);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(121, 13);
+            this.label23.TabIndex = 4;
+            this.label23.Text = "Palm Center Confidence";
+            // 
+            // tableLayoutPanel5
+            // 
+            this.tableLayoutPanel5.ColumnCount = 2;
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 77.44681F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 22.55319F));
+            this.tableLayoutPanel5.Controls.Add(this.label24, 0, 0);
+            this.tableLayoutPanel5.Controls.Add(this.label27, 0, 1);
+            this.tableLayoutPanel5.Controls.Add(this.confidenceDistance, 1, 0);
+            this.tableLayoutPanel5.Controls.Add(this.confidenceStatusLabelLeft, 1, 1);
+            this.tableLayoutPanel5.Location = new System.Drawing.Point(721, 17);
+            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
+            this.tableLayoutPanel5.RowCount = 4;
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel5.Size = new System.Drawing.Size(235, 100);
+            this.tableLayoutPanel5.TabIndex = 5;
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(3, 0);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(93, 13);
+            this.label24.TabIndex = 0;
+            this.label24.Text = "Max Dist x/y/z [m]";
+            // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(3, 25);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(143, 13);
+            this.label27.TabIndex = 1;
+            this.label27.Text = "Confidence Status 1st Hand:";
+            this.label27.Click += new System.EventHandler(this.label27_Click);
+            // 
+            // confidenceDistance
+            // 
+            this.confidenceDistance.DecimalPlaces = 3;
+            this.confidenceDistance.Location = new System.Drawing.Point(184, 3);
+            this.confidenceDistance.Name = "confidenceDistance";
+            this.confidenceDistance.Size = new System.Drawing.Size(48, 20);
+            this.confidenceDistance.TabIndex = 2;
+            this.confidenceDistance.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            131072});
+            // 
+            // confidenceStatusLabelLeft
+            // 
+            this.confidenceStatusLabelLeft.AutoSize = true;
+            this.confidenceStatusLabelLeft.Location = new System.Drawing.Point(184, 25);
+            this.confidenceStatusLabelLeft.Name = "confidenceStatusLabelLeft";
+            this.confidenceStatusLabelLeft.Size = new System.Drawing.Size(10, 13);
+            this.confidenceStatusLabelLeft.TabIndex = 4;
+            this.confidenceStatusLabelLeft.Text = "-";
             // 
             // MainForm
             // 
@@ -1198,8 +1315,14 @@
             this.fingerStatusTable.ResumeLayout(false);
             this.fingerStatusTable.PerformLayout();
             this.tableLayoutPanel4.ResumeLayout(false);
+            this.tableLayoutPanel10.ResumeLayout(false);
+            this.tableLayoutPanel10.PerformLayout();
+            this.indexFingerDetailsTable.ResumeLayout(false);
+            this.indexFingerDetailsTable.PerformLayout();
             this.tableLayoutPanel9.ResumeLayout(false);
             this.tableLayoutPanel9.PerformLayout();
+            this.tableLayoutPanel11.ResumeLayout(false);
+            this.tableLayoutPanel11.PerformLayout();
             this.tableLayoutPanel6.ResumeLayout(false);
             this.tableLayoutPanel6.PerformLayout();
             this.tableLayoutPanel7.ResumeLayout(false);
@@ -1218,10 +1341,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.farTrackingDistance)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nearTrackingWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.farTrackingHeight)).EndInit();
-            this.tableLayoutPanel10.ResumeLayout(false);
-            this.tableLayoutPanel10.PerformLayout();
-            this.indexFingerDetailsTable.ResumeLayout(false);
-            this.indexFingerDetailsTable.PerformLayout();
+            this.tableLayoutPanel5.ResumeLayout(false);
+            this.tableLayoutPanel5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.confidenceDistance)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1320,5 +1442,14 @@
         private System.Windows.Forms.Label indexPositionXLabel;
         private System.Windows.Forms.Label indexPositionYLabel;
         private System.Windows.Forms.Label indexPositionZLabel;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel11;
+        private System.Windows.Forms.Label label30;
+        private System.Windows.Forms.Label fpsLabel;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.NumericUpDown confidenceDistance;
+        private System.Windows.Forms.Label confidenceStatusLabelLeft;
     }
 }

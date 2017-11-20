@@ -19,10 +19,16 @@ namespace streams.cs
     {
         //Global Var
         private Manager manager;
-        private Streams streams;
-        private HandsRecognition handsRecognition;
-
+        private Streams streams;                            // Ev.ausgleidern in Manager Klasse
+        private HandModuleRecognition handsRecognition;     // Ev.ausgleidern in Manager Klasse 
+        private CursorModuleRecognition cursorRecognition;  // Ev.ausgleidern in Manager Klasse
+        private ConfidenceCalculation confidenceCalculation;// Ev.ausgleidern in Manager Klasse
         private volatile bool closing = false;
+        private readonly Queue<RS.Image> imageQueue;
+        private const int NumberOfFramesToDelay = 3;        // Ev.ausgleidern in Manager Klasse
+        private bool confidenceStatus = false;
+
+        public Tuple<RS.Point3DF32, RS.Point3DF32> speedPosition = null;
 
         // Layout 
         private ToolStripMenuItem[] streamMenue = new ToolStripMenuItem[RS.Capture.STREAM_LIMIT];
@@ -34,11 +40,16 @@ namespace streams.cs
 
         // Rendering
         private D2D1Render[] renders = new D2D1Render[2] { new D2D1Render(), new D2D1Render() }; // reder for .NET PictureBox
+        
 
         // Drawing Parameters 
-        private Bitmap resultBitmap = null;
+        public Bitmap resultBitmap = null;
 
         System.Threading.Thread thread1;
+
+        // Timer for updating Labels 
+        System.Timers.Timer updateLabelTimer = null;
+
 
         private class Item
         {
@@ -57,13 +68,18 @@ namespace streams.cs
 
         public MainForm(Manager mngr)
         {
+           
             InitializeComponent();
+            imageQueue = new Queue<RS.Image>();
             manager = mngr;
             streams = new Streams(manager);
-            handsRecognition = new HandsRecognition(manager, this);
+            handsRecognition = new HandModuleRecognition(manager, this);
+            cursorRecognition = new CursorModuleRecognition(manager, this);
+            confidenceCalculation = new ConfidenceCalculation(manager, this);
 
             // register event handler 
             manager.UpdateStatus += new EventHandler<UpdateStatusEventArgs>(UpdateStatus);
+            manager.UpdateFPSLabel += new EventHandler<UpdateFPSLabelEventArgs>(UpdateFPSLabel);
             streams.RenderFrame += new EventHandler<RenderFrameEventArgs>(RenderFrame);
             FormClosing += new FormClosingEventHandler(FormClosingHandler);
 
@@ -85,10 +101,17 @@ namespace streams.cs
             // Set up Renders für WindowsForms compability
             renders[0].SetHWND(rgbImage);
             renders[1].SetHWND(depthImage);
+           
 
             // Initialise Intel Realsense Components
             manager.CreateSession();
             manager.CreateSenseManager();
+
+            //Manage Buttons
+            buttonStop.Enabled = false;
+
+            // Setup Label update timer 
+            updateLabelTimer = new System.Timers.Timer();           
 
         }
 
@@ -167,6 +190,7 @@ namespace streams.cs
             streams.SetStreamMode();
             handsRecognition.SetUpHandModule();
             handsRecognition.RegisterHandEvents();
+            cursorRecognition.SetUpCursorModule();
 
             PopulateGestureList();
 
@@ -175,6 +199,10 @@ namespace streams.cs
             ReadCameraParametersFromUI();
             ReadHandModuleParametersFromUI();
             manager.SetCameraParameters();
+            manager.CreateDataSmoother();
+
+            // Aktivate Timer 
+            SetLabelUpdateTimer();
 
             // Thread for Streaming 
             thread1 = new System.Threading.Thread(DoWork);
@@ -188,22 +216,28 @@ namespace streams.cs
         {
             try
             {
-                RS.Status getFrameStatus;
+                RS.Status frameStatus;
                 RS.Sample sample = null;
                 while (!manager.Stop)
                 {
-                    getFrameStatus = manager.GetSample(out sample);
-                    if (getFrameStatus == RS.Status.STATUS_EXEC_TIMEOUT || getFrameStatus == RS.Status.STATUS_DEVICE_LOST)
+                    frameStatus = manager.GetSample(out sample);
+                    if (frameStatus == RS.Status.STATUS_EXEC_TIMEOUT || frameStatus == RS.Status.STATUS_DEVICE_LOST)
                     {
                         manager.SetStatus("Camera Error! Timeout or Device lost.");
-                        break;
+                        manager.Stop = true;
+                        //break;
                     }
                     manager.IncrementFrameNumber();
                     if (sample != null)
                     {
+                        DelayPicture(sample.Depth);
                         handsRecognition.RecogniseHands(sample);
+                        cursorRecognition.RecogniseCursor(sample);
+                        confidenceStatus = confidenceCalculation.CalculateConfidence(handsRecognition.HandData, cursorRecognition.CursorData);
+                        UpdateResultImage();
                         streams.RenderStreams(sample); // After Hands Recognition Since Hands recognition takes longer 
                         manager.SenseManager.ReleaseFrame();
+                        manager.timer.Tick();
                     }
                 }
 
@@ -218,6 +252,7 @@ namespace streams.cs
                 Invoke(new DoWorkEnd(
                         delegate
                         {
+                            updateLabelTimer.Stop();
                             buttonStart.Enabled = true;
                             buttonStop.Enabled = false;
                             menuStrip.Enabled = true;
@@ -225,8 +260,9 @@ namespace streams.cs
                             {
                                 manager.SetStatus("Stopped");
                             }
-                            manager.SenseManager.Close();
 
+                            CleanUpPipeline();
+                            
                             if (closing) Close();
 
                         }
@@ -299,22 +335,26 @@ namespace streams.cs
         }
         #endregion
 
-        private void SetStatus(String text)
-        {
-            statusStripLabel.Text = text;
-        }
-
-        private delegate void SetStatusDelegate(String status);
+        private delegate void UpdateStatusDelegate(String status);
         private void UpdateStatus(Object sender, UpdateStatusEventArgs e)
         {
             // Elemente im Hauptfenster müssen über MainThread bearbeitet werden 
             // Über Invoke, wird aktion vom Hauptthread gestartet
-            statusStrip.Invoke(new SetStatusDelegate(SetStatus), new object[] { e.text });
+            statusStrip.Invoke(new UpdateStatusDelegate(delegate (String status)
+            {
+                statusStripLabel.Text = status;
+
+            }), new object[] { e.text });
         }
 
-        private void toolStripStatusLabel1_Click(object sender, EventArgs e)
-        {
+        private delegate void UpdateFPSLabelDelegate(String status);
+        private void UpdateFPSLabel(Object sender, UpdateFPSLabelEventArgs e)
+        {           
+            statusStrip.Invoke(new UpdateFPSLabelDelegate(delegate (String status)
+            {
+                fpsLabel.Text = status;
 
+            }), new object[] { e.text });
         }
 
         private void Device_Item_Click(object sender, EventArgs e)
@@ -338,9 +378,11 @@ namespace streams.cs
         private void buttonStop_Click(object sender, EventArgs e)
         {
             manager.Stop = true;
+            updateLabelTimer.Stop();
             ResetGesturesList();
             ResetFingerFlexStatus();
             ResetIndexFingerDetails();
+            fpsLabel.Text = "-";
         }
 
         private void StreamRadioButton_Click(object sender, EventArgs e)
@@ -384,13 +426,94 @@ namespace streams.cs
             }), new object[] { status, color });
         }
 
-        public void DisplayHandRecognitionBitmap(Bitmap picture)
+
+
+        /* Delay Depth/Mask Images - for depth image only we use a delay of NumberOfFramesToDelay to sync image with tracking */
+        private unsafe void DelayPicture(RS.Image depth)
         {
-            lock (this)
+            if (depth == null)
+                return;
+
+            //Make Copy of Depth Image
+            RS.Image image = depth;
+
+            //collecting 3 images inside a queue and displaying the oldest image
+            RS.ImageInfo info; //Pixel Format, Width, Heigth 
+            RS.Image image2;
+            RS.ImageData imageData = new RS.ImageData();
+            info = image.Info;
+            image2 = RS.Image.CreateInstance(manager.Session, info, imageData);
+            if (image2 == null) { return; }
+            image2.CopyImage(image);
+            imageQueue.Enqueue(image2);
+            if (imageQueue.Count == NumberOfFramesToDelay)
             {
-                if (resultBitmap != null)
-                    resultBitmap.Dispose();
-                resultBitmap = new Bitmap(picture);
+                System.Drawing.Bitmap depthBitmap;
+                try
+                {
+                    depthBitmap = new System.Drawing.Bitmap(image.Info.width, image.Info.height, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
+                }
+                catch (Exception)
+                {
+                    image.Dispose();
+                    RS.Image queImage = imageQueue.Dequeue();
+                    queImage.Dispose();
+                    return;
+                }
+
+                RS.ImageData data3 = null; ;
+                RS.Image image3 = imageQueue.Dequeue();
+
+                // Stürzt hier öfter ab mit access violation error message: Warum?!!
+                //    if (image3.AcquireAccess(RS.ImageAccess.ACCESS_READ, RS.PixelFormat.PIXEL_FORMAT_DEPTH, out data3) >= RS.Status.STATUS_NO_ERROR)
+                //    {
+                //        float fMaxValue = manager.GetDeviceRange();
+                //        byte cVal;
+
+                //        var rect = new System.Drawing.Rectangle(0, 0, image.Info.width, image.Info.height);
+                //        var bitmapdata = depthBitmap.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadWrite, depthBitmap.PixelFormat);
+
+                //        byte* pDst = (byte*)bitmapdata.Scan0;
+                //        short* pSrc = (short*)data3.planes[0];
+                //        int size = image.Info.width * image.Info.height;
+
+                //        for (int i = 0; i < size; i++, pSrc++, pDst += 4)
+                //        {
+                //            cVal = (byte)((*pSrc) / fMaxValue * 255);
+                //            if (cVal != 0)
+                //                cVal = (byte)(255 - cVal);
+
+                //            pDst[0] = cVal;
+                //            pDst[1] = cVal;
+                //            pDst[2] = cVal;
+                //            pDst[3] = 255;
+                //        }
+                //        try
+                //        {
+                //            depthBitmap.UnlockBits(bitmapdata);
+                //        }
+                //        catch (Exception)
+                //        {
+
+                //            image3.ReleaseAccess(data3);
+                //            depthBitmap.Dispose();
+                //            image3.Dispose();
+                //            return;
+                //        }
+
+                //        lock (this)
+                //        {
+                //            if (resultBitmap != null)
+                //                resultBitmap.Dispose();
+                //            resultBitmap = new Bitmap(depthBitmap);
+                //        }
+                //        image3.ReleaseAccess(data3);
+                //    }
+                //    depthBitmap.Dispose();
+                //    image3.Dispose();
+                //}
+
+
             }
         }
 
@@ -506,150 +629,7 @@ namespace streams.cs
             }
         }
 
-        public void DisplayJoints(RS.Hand.JointData[][] nodes, int numOfHands)
-        {
-            if (resultBitmap == null) return;
-            if (nodes == null) return;
 
-
-            lock (this)
-            {
-                int scaleFactor = 1;
-
-                Graphics g = Graphics.FromImage(resultBitmap);
-
-                using (Pen boneColor = new Pen(Color.DodgerBlue, 3.0f))
-                {
-                    for (int i = 0; i < numOfHands; i++)
-                    {
-                        if (nodes[i][0] == null) continue;
-                        int baseX = (int)nodes[i][0].positionImage.x / scaleFactor;
-                        int baseY = (int)nodes[i][0].positionImage.y / scaleFactor;
-
-                        int wristX = (int)nodes[i][0].positionImage.x / scaleFactor;
-                        int wristY = (int)nodes[i][0].positionImage.y / scaleFactor;
-
-                        // Display Skeleton
-                        for (int j = 1; j < 22; j++)
-                        {
-                            if (nodes[i][j] == null) continue;
-                            int x = (int)nodes[i][j].positionImage.x / scaleFactor;
-                            int y = (int)nodes[i][j].positionImage.y / scaleFactor;
-
-                            if (nodes[i][j].confidence <= 0) continue;
-
-                            if (j == 2 || j == 6 || j == 10 || j == 14 || j == 18)
-                            {
-
-                                baseX = wristX;
-                                baseY = wristY;
-                            }
-
-                            g.DrawLine(boneColor, new Point(baseX, baseY), new Point(x, y));
-                            baseX = x;
-                            baseY = y;
-                        }
-
-
-                        // Display Joints 
-                        using (
-                            Pen red = new Pen(Color.Red, 3.0f),
-                                black = new Pen(Color.Black, 3.0f),
-                                green = new Pen(Color.Green, 3.0f),
-                                blue = new Pen(Color.Blue, 3.0f),
-                                cyan = new Pen(Color.Cyan, 3.0f),
-                                yellow = new Pen(Color.Yellow, 3.0f),
-                                orange = new Pen(Color.Orange, 3.0f))
-                        {
-                            Pen currnetPen = black;
-
-                            for (int j = 0; j < RS.Hand.HandData.NUMBER_OF_JOINTS; j++)
-                            {
-                                float sz = 4;
-
-                                int x = (int)nodes[i][j].positionImage.x / scaleFactor;
-                                int y = (int)nodes[i][j].positionImage.y / scaleFactor;
-
-                                if (nodes[i][j].confidence <= 0) continue;
-
-                                //Wrist
-                                if (j == 0)
-                                {
-                                    currnetPen = black;
-                                }
-
-                                //Center
-                                if (j == 1)
-                                {
-                                    currnetPen = red;
-                                    sz += 4;
-                                }
-
-                                //Thumb
-                                if (j == 2 || j == 3 || j == 4 || j == 5)
-                                {
-                                    currnetPen = green;
-                                }
-                                //Index Finger
-                                if (j == 6 || j == 7 || j == 8 || j == 9)
-                                {
-                                    currnetPen = blue;
-                                }
-                                //Finger
-                                if (j == 10 || j == 11 || j == 12 || j == 13)
-                                {
-                                    currnetPen = yellow;
-                                }
-                                //Ring Finger
-                                if (j == 14 || j == 15 || j == 16 || j == 17)
-                                {
-                                    currnetPen = cyan;
-                                }
-                                //Pinkey
-                                if (j == 18 || j == 19 || j == 20 || j == 21)
-                                {
-                                    currnetPen = orange;
-                                }
-
-
-                                if (j == 5 || j == 9 || j == 13 || j == 17 || j == 21)
-                                {
-                                    sz += 4;
-                                }
-
-                                g.DrawEllipse(currnetPen, x - sz / 2, y - sz / 2, sz, sz);
-                            }
-                        }
-                    }
-
-                }
-                g.Dispose();
-            }
-
-        }
-
-        public void DisplayExtremities(int numOfHands, RS.Hand.ExtremityData[][] extremitites = null)
-        {
-            if (resultBitmap == null) return;
-            if (extremitites == null) return;
-
-            int scaleFactor = 1;
-            Graphics g = Graphics.FromImage(resultBitmap);
-
-            float sz = 8;
-
-            Pen pen = new Pen(Color.Red, 3.0f);
-            for (int i = 0; i < numOfHands; ++i)
-            {
-                for (int j = 0; j < RS.Hand.HandData.NUMBER_OF_EXTREMITIES; ++j)
-                {
-                    int x = (int)extremitites[i][j].pointImage.x / scaleFactor;
-                    int y = (int)extremitites[i][j].pointImage.y / scaleFactor;
-                    g.DrawEllipse(pen, x - sz / 2, y - sz / 2, sz, sz);
-                }
-            }
-            pen.Dispose();
-        }
 
         private void gestureListBox_ItemCheck(object sender, ItemCheckEventArgs e)
         {
@@ -661,6 +641,10 @@ namespace streams.cs
 
         }
 
+
+        /*
+         * Playback Mode Stuff 
+        */
         private void liveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //Set flags 
@@ -711,81 +695,12 @@ namespace streams.cs
 
         }
 
-        private delegate void DisplayFingerStatusDelegate();
-        public void DisplayFingerStatus(bool statusChanged)
-        {
-            if (statusChanged)
-            {
-                fingerStatusTable.Invoke(new DisplayFingerStatusDelegate(delegate ()
-                {
-                    for (int hand = 0; hand < handsRecognition.numOfHands; hand++)
-                    {
-                        int i = 0;
-                        foreach (KeyValuePair<RS.Hand.FingerType, HandsRecognition.FingerFlex> finger in handsRecognition.fingerStatus[hand])
-                        {
-                            string value = finger.Value.ToString();
-                            fingerStatusTable.GetControlFromPosition(hand + 1, i + 1).Text = value;
-                            i++;
-                        }
-                    }
-                }), new object[] { });
-            }
-        }
-
-        private delegate void DisplayIndexFingerDetailsDelegate();
-        public void DisplayIndexFingerDetails(Tuple<RS.Point3DF32, RS.Point3DF32> speedPosition)
-        {
-            indexFingerDetailsTable.Invoke(new DisplayIndexFingerDetailsDelegate(delegate ()
-            {
-                int speed = 1;
-                int position = 2;
-                int i = 0;
-
-                indexFingerDetailsTable.GetControlFromPosition(speed,  1).Text = speedPosition.Item1.x.ToString();
-                indexFingerDetailsTable.GetControlFromPosition(speed,  2).Text = speedPosition.Item1.y.ToString();
-                indexFingerDetailsTable.GetControlFromPosition(speed,  3).Text = speedPosition.Item1.z.ToString();
-
-                indexFingerDetailsTable.GetControlFromPosition(position,  1).Text = speedPosition.Item2.x.ToString();
-                indexFingerDetailsTable.GetControlFromPosition(position,  2).Text = speedPosition.Item2.y.ToString();
-                indexFingerDetailsTable.GetControlFromPosition(position,  3).Text = speedPosition.Item2.z.ToString();
-
-
-            }), new object[] { });
-
-        }
 
 
 
-        private delegate void ResetFingerStatusDelegate();
-        public void ResetFingerFlexStatus()
-        {
-            fingerStatusTable.Invoke(new ResetFingerStatusDelegate(delegate ()
-            {
-                for (int hand = 0; hand < 2; hand++)
-                {
-                    for (int finger = 0; finger < 5; finger++)
-                    {
-                        fingerStatusTable.GetControlFromPosition(hand + 1, finger + 1).Text = "-";
-                    }
-                }
-            }), new object[] { });
-        }
-
-        private delegate void ResetIndexFingerDetailsDelegate();
-        public void ResetIndexFingerDetails()
-        {
-            fingerStatusTable.Invoke(new ResetIndexFingerDetailsDelegate(delegate ()
-            {
-                for (int column = 0; column < 2; column++)
-                {
-                    for (int row = 0; row < 3; row++)
-                    {
-                        indexFingerDetailsTable.GetControlFromPosition(column + 1, row + 1).Text = "-";
-                    }
-                }
-            }), new object[] { });
-        }
-
+        /*
+         * Parameter from UI Stuff
+        */
         private void ReadCameraParametersFromUI()
         {
             manager.cameraSettings.LaserPower = Decimal.ToInt32(laserPower.Value);
@@ -834,9 +749,143 @@ namespace streams.cs
             stabilizer.Enabled = true;
         }
 
-        private void tableLayoutPanel5_Paint(object sender, PaintEventArgs e)
+        private delegate void DisplayFingerStatusDelegate();
+        public void DisplayFingerStatus(bool statusChanged)
+        {
+            if (statusChanged)
+            {
+                fingerStatusTable.Invoke(new DisplayFingerStatusDelegate(delegate ()
+                {
+                    for (int hand = 0; hand < handsRecognition.numOfHands; hand++)
+                    {
+                        int i = 0;
+                        foreach (KeyValuePair<RS.Hand.FingerType, HandModuleRecognition.FingerFlex> finger in handsRecognition.fingerStatus[hand])
+                        {
+                            string value = finger.Value.ToString();
+                            fingerStatusTable.GetControlFromPosition(hand + 1, i + 1).Text = value;
+                            i++;
+                        }
+                    }
+                }), new object[] { });
+            }
+        }
+
+        private delegate void DisplayIndexFingerDetailsDelegate();
+        public void DisplayIndexFingerDetails(Tuple<RS.Point3DF32, RS.Point3DF32> speedPosition)
+        {
+            indexFingerDetailsTable.Invoke(new DisplayIndexFingerDetailsDelegate(delegate ()
+            {
+                int speed = 1;
+                int position = 2;                
+
+                indexFingerDetailsTable.GetControlFromPosition(speed, 1).Text = speedPosition.Item1.x.ToString();
+                indexFingerDetailsTable.GetControlFromPosition(speed, 2).Text = speedPosition.Item1.y.ToString();
+                indexFingerDetailsTable.GetControlFromPosition(speed, 3).Text = speedPosition.Item1.z.ToString();
+
+                indexFingerDetailsTable.GetControlFromPosition(position, 1).Text = speedPosition.Item2.x.ToString();
+                indexFingerDetailsTable.GetControlFromPosition(position, 2).Text = speedPosition.Item2.y.ToString();
+                indexFingerDetailsTable.GetControlFromPosition(position, 3).Text = speedPosition.Item2.z.ToString();
+
+
+            }), new object[] { });
+
+        }
+
+        private delegate void ResetFingerStatusDelegate();
+        public void ResetFingerFlexStatus()
+        {
+            fingerStatusTable.Invoke(new ResetFingerStatusDelegate(delegate ()
+            {
+                for (int hand = 0; hand < 2; hand++)
+                {
+                    for (int finger = 0; finger < 5; finger++)
+                    {
+                        fingerStatusTable.GetControlFromPosition(hand + 1, finger + 1).Text = "-";
+                    }
+                }
+            }), new object[] { });
+        }
+
+        private delegate void ResetIndexFingerDetailsDelegate();
+        public void ResetIndexFingerDetails()
+        {
+            fingerStatusTable.Invoke(new ResetIndexFingerDetailsDelegate(delegate ()
+            {
+                for (int column = 0; column < 2; column++)
+                {
+                    for (int row = 0; row < 3; row++)
+                    {
+                        indexFingerDetailsTable.GetControlFromPosition(column + 1, row + 1).Text = "-";
+                    }
+                }
+            }), new object[] { });
+        }
+
+        private void CleanUpPipeline()
+        {
+            handsRecognition.CleanUpHands();
+            cursorRecognition.CleanUpCursor();
+            manager.SenseManager.Close();
+            updateLabelTimer.Close();
+            foreach (RS.Image Image in imageQueue)
+            {
+                Image.Dispose();
+            }
+
+        }
+
+        private delegate void UpdateFPSStatusDelegate(string status);
+        public void UpdateFPSStatus(string status)
+        {
+            fpsLabel.Invoke(new UpdateFPSStatusDelegate(delegate (string s)
+            {
+                fpsLabel.Text = s;
+
+            }), new object[] { status });
+        }
+
+        private void SetLabelUpdateTimer()
+        {
+            updateLabelTimer.Elapsed += UpdateLabelTimer_Elapsed;
+            updateLabelTimer.Interval = 200;
+            updateLabelTimer.Enabled = true;
+        }
+
+        private void UpdateLabelTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            if (handsRecognition.HandData.NumberOfHands > 0)
+            {
+                DisplayIndexFingerDetails(speedPosition);
+                DisplayConfidenceStatus(confidenceStatus);
+            }
+        }
+
+        private delegate void DisplayConfidenceStatusDelegate(bool status);
+        public void DisplayConfidenceStatus(bool status)
+        {
+            confidenceStatusLabelLeft.Invoke(new DisplayConfidenceStatusDelegate (delegate (bool stat)
+            {
+                if(stat)
+                confidenceStatusLabelLeft.Text = "HIGH";
+
+                else confidenceStatusLabelLeft.Text = "LOW";
+
+
+            }), new object[] {status});
+
+            
+        }
+
+
+        public float ReadMaxConfidenceDistanceFromUI()
+        {
+            return (float)confidenceDistance.Value;
+        }
+
+        private void label27_Click(object sender, EventArgs e)
         {
 
         }
     }
+
 }

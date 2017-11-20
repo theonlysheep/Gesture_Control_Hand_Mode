@@ -4,21 +4,20 @@ using System.ComponentModel;
 using System.Linq;
 using Intel.RealSense;
 using Intel.RealSense.Hand;
+using Draw = System.Drawing; //Prevent confusion with RealSense Parameters 
 
 namespace streams.cs
 {
-    class HandsRecognition
+    class HandModuleRecognition
     {
         private HandModule handModule = null;
         public HandConfiguration HandConfiguration { get; set; } = null;
-        private HandData handData = null;
+        public HandData HandData { get; set; } = null;
         private AlertData previousAlertData = null;
         private GestureData previousGestureData = null;
+        private const float PEN_SIZE = 3.0f;
 
-        private readonly Queue<Image> _mImages;
-        private const int NumberOfFramesToDelay = 3;
 
-        private readonly Queue<Point3DF32>[] mCursorPoints;
 
         public List<string> ActivatedGestures { get; set; }
 
@@ -61,18 +60,10 @@ namespace streams.cs
         };
         public HandModuleSettings handModuleSettings = new HandModuleSettings();
 
-
-
-        public HandsRecognition(Manager mngr, MainForm frm)
+        public HandModuleRecognition(Manager mngr, MainForm frm)
         {
-            _mImages = new Queue<Image>();
-            mCursorPoints = new Queue<Point3DF32>[2];
-            mCursorPoints[0] = new Queue<Point3DF32>();
-            mCursorPoints[1] = new Queue<Point3DF32>();
-
             manager = mngr;
             form = frm;
-
         }
 
         #region Events 
@@ -108,7 +99,7 @@ namespace streams.cs
             if (previousGestureData.name.Equals(data.name) && previousGestureData.frameNumber != data.frameNumber)
             {
                 IHand hand;
-                if (handData.QueryHandDataById(data.handId, out hand) != Status.STATUS_NO_ERROR)
+                if (HandData.QueryHandDataById(data.handId, out hand) != Status.STATUS_NO_ERROR)
                     return;
                 BodySideType bodySideType = hand.BodySide;
 
@@ -128,7 +119,7 @@ namespace streams.cs
                         "; z=" + hand.MassCenterWorld.z.ToString() +
                         "\n", System.Drawing.Color.SeaGreen);
                 else
-                    form.UpdateGestureInfo("Frame " + data.frameNumber + ") " + gestureStatusRight +
+                    form.UpdateGestureInfo("Frame " + data.frameNumber + ") " + gestureStatusLeft +
                         " At Position: x=" + hand.MassCenterWorld.x.ToString() +
                         "; y=" + hand.MassCenterWorld.y.ToString() +
                         "; z=" + hand.MassCenterWorld.z.ToString() +
@@ -138,7 +129,6 @@ namespace streams.cs
             }
         }
 
-
         public static Status OnNewFrame(Int32 mid, Base module, Sample sample)
         {
             return Status.STATUS_NO_ERROR;
@@ -146,51 +136,33 @@ namespace streams.cs
 
         #endregion
 
-        /* Displaying Depth/Mask Images - for depth image only we use a delay of NumberOfFramesToDelay to sync image with tracking */
-        private void DisplayCursorPicture(Image depth)
-        {
-            if (depth == null)
-                return;
-
-            var depthBitmap = new System.Drawing.Bitmap(depth.Info.width, depth.Info.height, System.Drawing.Imaging.PixelFormat.Format8bppIndexed);
-            form.DisplayHandRecognitionBitmap(depthBitmap);
-            depthBitmap.Dispose();
-        }
-
-
-
         /* Using SenseManager to handle data */
         public void RecogniseHands(Sample sample)
         {
             if (sample != null && sample.Depth != null)
             {
-                int frameNumber = manager.FrameNumber;
-
-                if (handData != null)
+                if (HandData != null)
                 {
-                    handData.Update(); //Get newest Data from camera 
-                    DisplayPicture(sample.Depth, handData);
-                    if (numOfHands == 0) form.ResetFingerFlexStatus();
-
-                    if (handData.NumberOfHands > 0)
+                    HandData.Update(); //Get newest Data from camera 
+                    if (HandData.NumberOfHands == 0)
                     {
-                        DisplayJoints(handData);
-                        bool statusChanged = GetFingerFlexState(handData);
-                        Tuple<Point3DF32, Point3DF32> speedPosition = GetIndexFingerDetails(handData);
+                        form.ResetFingerFlexStatus();
+                        form.ResetIndexFingerDetails();
+                    }
+
+                    if (HandData.NumberOfHands > 0)
+                    {
+                        GetJointsLocation(HandData);
+                        bool statusChanged = GetFingerFlexState(HandData);
+                        form.speedPosition = GetIndexFingerDetails(HandData); // Display with Timer 
 
                         // Use Status Changed also for Position Displaying to limit UI updates 
-                        if (statusChanged)
-                        {
-                            form.DisplayFingerStatus(statusChanged);
-                            form.DisplayIndexFingerDetails(speedPosition);
 
-                        }
+                        form.DisplayFingerStatus(statusChanged);
                     }
                 }
-                form.UpdateResultImage();
             }
         }
-
 
         public void RegisterHandEvents()
         {
@@ -201,7 +173,6 @@ namespace streams.cs
                 HandConfiguration.ApplyChanges();
             }
         }
-
 
         public void EnableGesturesFromSelection()
         {
@@ -258,8 +229,8 @@ namespace streams.cs
                 return;
             }
 
-            handData = handModule.CreateOutput();
-            if (handData == null)
+            HandData = handModule.CreateOutput();
+            if (HandData == null)
             {
                 manager.SetStatus("Failed Create Output");
                 HandConfiguration.Dispose();
@@ -274,16 +245,12 @@ namespace streams.cs
         public void CleanUpHands()
         {
             // Clean Up
-            if (handData != null) handData.Dispose();
+            if (HandData != null) HandData.Dispose();
             if (HandConfiguration != null)
             {
                 HandConfiguration.AlertFired -= OnFiredAlert;
                 HandConfiguration.GestureFired -= OnFiredGesture;
                 HandConfiguration.Dispose();
-            }
-            foreach (Image Image in _mImages)
-            {
-                Image.Dispose();
             }
         }
 
@@ -293,7 +260,7 @@ namespace streams.cs
             var jointDataNodes = new Dictionary<JointType, JointData>[2]; //[Hand]
             var extremityDataNodes = new Dictionary<ExtremityType, ExtremityData>[2]; //[Hand]
             var bodySide = new BodySideType[2];
-                       
+
 
             numOfHands = handData.NumberOfHands;
 
@@ -328,7 +295,7 @@ namespace streams.cs
                 return new Tuple<Point3DF32, Point3DF32>(indexSpeed3D, indexWorldCoordinates);
             }
             else return null;
-            
+
         }
 
         public bool GetFingerFlexState(HandData handData)
@@ -428,7 +395,7 @@ namespace streams.cs
         */
 
         /* Displaying current  gestures */
-        private void DisplayGesture(HandData handData, int frameNumber)
+        private void DisplayGestureMessages(HandData handData, int frameNumber)
         {
             if (handData.FiredGestureData != null)
             {
@@ -467,97 +434,15 @@ namespace streams.cs
         }
 
 
-        /* Displaying Depth/Mask Images - for depth image only we use a delay of NumberOfFramesToDelay to sync image with tracking */
-        private unsafe void DisplayPicture(Image depth, HandData handAnalysis)
-        {
-            if (depth == null)
-                return;
-
-            //Make Copy of Depth Image
-            Image image = depth;
-
-            //collecting 3 images inside a queue and displaying the oldest image
-            ImageInfo info;
-            Image image2;
-            ImageData imageData = new ImageData();
-            info = image.Info;
-            image2 = Image.CreateInstance(manager.Session, info, imageData);
-            if (image2 == null) { return; }
-            image2.CopyImage(image);
-            _mImages.Enqueue(image2);
-            if (_mImages.Count == NumberOfFramesToDelay)
-            {
-                System.Drawing.Bitmap depthBitmap;
-                try
-                {
-                    depthBitmap = new System.Drawing.Bitmap(image.Info.width, image.Info.height, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
-                }
-                catch (Exception)
-                {
-                    image.Dispose();
-                    Image queImage = _mImages.Dequeue();
-                    queImage.Dispose();
-                    return;
-                }
-
-                ImageData data3;
-                Image image3 = _mImages.Dequeue();
-                if (image3.AcquireAccess(ImageAccess.ACCESS_READ, PixelFormat.PIXEL_FORMAT_DEPTH, out data3) >= Status.STATUS_NO_ERROR)
-                {
-                    float fMaxValue = manager.GetDeviceRange();
-                    byte cVal;
-
-                    var rect = new System.Drawing.Rectangle(0, 0, image.Info.width, image.Info.height);
-                    var bitmapdata = depthBitmap.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadWrite, depthBitmap.PixelFormat);
-
-                    byte* pDst = (byte*)bitmapdata.Scan0;
-                    short* pSrc = (short*)data3.planes[0];
-                    int size = image.Info.width * image.Info.height;
-
-                    for (int i = 0; i < size; i++, pSrc++, pDst += 4)
-                    {
-                        cVal = (byte)((*pSrc) / fMaxValue * 255);
-                        if (cVal != 0)
-                            cVal = (byte)(255 - cVal);
-
-                        pDst[0] = cVal;
-                        pDst[1] = cVal;
-                        pDst[2] = cVal;
-                        pDst[3] = 255;
-                    }
-                    try
-                    {
-                        depthBitmap.UnlockBits(bitmapdata);
-                    }
-                    catch (Exception)
-                    {
-                        image3.ReleaseAccess(data3);
-                        depthBitmap.Dispose();
-                        image3.Dispose();
-                        return;
-                    }
-
-                    form.DisplayHandRecognitionBitmap(depthBitmap);
-                    image3.ReleaseAccess(data3);
-                }
-                depthBitmap.Dispose();
-                image3.Dispose();
-            }
-
-
-        }
-
 
         /* Displaying current frames hand joints */
-        private void DisplayJoints(HandData handData, long timeStamp = 0)
+        private void GetJointsLocation(HandData handData)
         {
             //Iterate hands
             var jointDataNodes = new JointData[][] { new JointData[0x20], new JointData[0x20] };
             var extremityDataNodes = new ExtremityData[][] { new ExtremityData[0x6], new ExtremityData[0x6] };
 
             int numOfHands = handData.NumberOfHands;
-
-            if (numOfHands == 1) mCursorPoints[1].Clear();
 
             for (int i = 0; i < numOfHands; i++)
             {
@@ -584,13 +469,169 @@ namespace streams.cs
                 }
             } // end iterating over hands
 
-
-            form.DisplayJoints(jointDataNodes, numOfHands);
             if (numOfHands > 0)
             {
-                form.DisplayExtremities(numOfHands, extremityDataNodes);
+                DrawJoints(jointDataNodes, numOfHands);
+                DrawExtremities(numOfHands, extremityDataNodes);
             }
         }
+
+        ///* Displaying Depth/Mask Images - for depth image only we use a delay of NumberOfFramesToDelay to sync image with tracking */
+        //private void DisplayResultPicture(Image depth)
+        //{
+        //    if (depth == null)
+        //        return;
+
+        //    var depthBitmap = new System.Drawing.Bitmap(depth.Info.width, depth.Info.height, System.Drawing.Imaging.PixelFormat.Format8bppIndexed);
+        //    form.DisplayHandRecognitionBitmap(depthBitmap);
+        //    depthBitmap.Dispose();
+        //}
+
+        public void DrawExtremities(int numOfHands, ExtremityData[][] extremitites = null)
+        {
+            if (form.resultBitmap == null) return;
+            if (extremitites == null) return;
+
+            int scaleFactor = 1;
+            Draw.Graphics g = Draw.Graphics.FromImage(form.resultBitmap);
+
+            float sz = 8;
+
+            Draw.Pen pen = new Draw.Pen(Draw.Color.Red, PEN_SIZE);
+            for (int i = 0; i < numOfHands; ++i)
+            {
+                for (int j = 0; j < HandData.NUMBER_OF_EXTREMITIES; ++j)
+                {
+                    int x = (int)extremitites[i][j].pointImage.x / scaleFactor;
+                    int y = (int)extremitites[i][j].pointImage.y / scaleFactor;
+                    g.DrawEllipse(pen, x - sz / 2, y - sz / 2, sz, sz);
+                }
+            }
+            pen.Dispose();
+        }
+
+        public void DrawJoints(JointData[][] nodes, int numOfHands)
+        {
+            if (form.resultBitmap == null) return;
+            if (nodes == null) return;
+
+
+            lock (this)
+            {
+                int scaleFactor = 1;
+
+                Draw.Graphics g = Draw.Graphics.FromImage(form.resultBitmap);
+
+                using (Draw.Pen boneColor = new Draw.Pen(Draw.Color.DodgerBlue, PEN_SIZE))
+                {
+                    for (int i = 0; i < numOfHands; i++)
+                    {
+                        if (nodes[i][0] == null) continue;
+                        int baseX = (int)nodes[i][0].positionImage.x / scaleFactor;
+                        int baseY = (int)nodes[i][0].positionImage.y / scaleFactor;
+
+                        int wristX = (int)nodes[i][0].positionImage.x / scaleFactor;
+                        int wristY = (int)nodes[i][0].positionImage.y / scaleFactor;
+
+                        // Display Skeleton
+                        for (int j = 1; j < 22; j++)
+                        {
+                            if (nodes[i][j] == null) continue;
+                            int x = (int)nodes[i][j].positionImage.x / scaleFactor;
+                            int y = (int)nodes[i][j].positionImage.y / scaleFactor;
+
+                            if (nodes[i][j].confidence <= 0) continue;
+
+                            if (j == 2 || j == 6 || j == 10 || j == 14 || j == 18)
+                            {
+
+                                baseX = wristX;
+                                baseY = wristY;
+                            }
+
+                            g.DrawLine(boneColor, new Draw.Point(baseX, baseY), new Draw.Point(x, y));
+                            baseX = x;
+                            baseY = y;
+                        }
+
+
+                        // Display Joints 
+                        using (
+                            Draw.Pen red = new Draw.Pen(Draw.Color.Red, PEN_SIZE),
+                                black = new Draw.Pen(Draw.Color.Black, PEN_SIZE),
+                                green = new Draw.Pen(Draw.Color.Green, PEN_SIZE),
+                                blue = new Draw.Pen(Draw.Color.Blue, PEN_SIZE),
+                                cyan = new Draw.Pen(Draw.Color.Cyan, PEN_SIZE),
+                                yellow = new Draw.Pen(Draw.Color.Yellow, PEN_SIZE),
+                                orange = new Draw.Pen(Draw.Color.Orange, PEN_SIZE))
+                        {
+                            Draw.Pen currnetPen = black;
+
+                            for (int j = 0; j < HandData.NUMBER_OF_JOINTS; j++)
+                            {
+                                float sz = 4;
+
+                                int x = (int)nodes[i][j].positionImage.x / scaleFactor;
+                                int y = (int)nodes[i][j].positionImage.y / scaleFactor;
+
+                                if (nodes[i][j].confidence <= 0) continue;
+
+                                //Wrist
+                                if (j == 0)
+                                {
+                                    currnetPen = black;
+                                }
+
+                                //Center
+                                if (j == 1)
+                                {
+                                    currnetPen = red;
+                                    sz += 4;
+                                }
+
+                                //Thumb
+                                if (j == 2 || j == 3 || j == 4 || j == 5)
+                                {
+                                    currnetPen = green;
+                                }
+                                //Index Finger
+                                if (j == 6 || j == 7 || j == 8 || j == 9)
+                                {
+                                    currnetPen = blue;
+                                }
+                                //Finger
+                                if (j == 10 || j == 11 || j == 12 || j == 13)
+                                {
+                                    currnetPen = yellow;
+                                }
+                                //Ring Finger
+                                if (j == 14 || j == 15 || j == 16 || j == 17)
+                                {
+                                    currnetPen = cyan;
+                                }
+                                //Pinkey
+                                if (j == 18 || j == 19 || j == 20 || j == 21)
+                                {
+                                    currnetPen = orange;
+                                }
+
+
+                                if (j == 5 || j == 9 || j == 13 || j == 17 || j == 21)
+                                {
+                                    sz += 4;
+                                }
+
+                                g.DrawEllipse(currnetPen, x - sz / 2, y - sz / 2, sz, sz);
+                            }
+                        }
+                    }
+
+                }
+                g.Dispose();
+            }
+
+        }
+
 
     }
 }

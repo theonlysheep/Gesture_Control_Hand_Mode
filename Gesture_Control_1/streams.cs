@@ -31,9 +31,9 @@ namespace streams.cs
         public void ConfigureStreams()
         {
             //manager.sampleReader.EnableStream(RS.StreamType.STREAM_TYPE_COLOR, 1920, 1080, 30);
-            //manager.sampleReader.EnableStream(RS.StreamType.STREAM_TYPE_COLOR, 640, 480, 30);
+            manager.sampleReader.EnableStream(RS.StreamType.STREAM_TYPE_COLOR, 640, 480, 30);
             manager.sampleReader.EnableStream(RS.StreamType.STREAM_TYPE_DEPTH, 640, 480, 60);
-            //manager.sampleReader.EnableStream(RS.StreamType.STREAM_TYPE_IR, 640, 480, 60);
+            manager.sampleReader.EnableStream(RS.StreamType.STREAM_TYPE_IR, 640, 480, 60);
         }
 
         public void RenderStreams(RS.Sample sample)
@@ -70,6 +70,7 @@ namespace streams.cs
 
             }
         }
+
         public void SetStreamMode()
         {
             // Playback mode

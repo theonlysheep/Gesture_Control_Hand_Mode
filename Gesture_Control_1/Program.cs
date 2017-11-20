@@ -29,9 +29,7 @@ namespace streams.cs
                 if (manager.SenseManager != null && manager.Session !=null)
                 {
                     Application.Run(new MainForm(manager));
-                    manager.Session.Dispose();
-                    manager.SenseManager.Close();
-                    manager.SenseManager.Dispose();
+                    manager.CleanUpSession();                    
                 }
             }
             catch (Exception e)

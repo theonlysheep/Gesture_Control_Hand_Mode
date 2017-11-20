@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RS = Intel.RealSense;
 using System.Windows.Forms;
+using Intel.RealSense.Utility;
 
 namespace streams.cs
 {
@@ -14,7 +15,8 @@ namespace streams.cs
         public RS.Session Session { get; set; }
         public RS.SenseManager SenseManager { get; set; }
         public RS.DeviceInfo DeviceInfo { get; set; }
-        public Timer timer;
+        public Smoother Smoother { get; set; }
+
         public RS.SampleReader sampleReader { get; set; }
         public int FrameNumber { get; set; }
         private int liveFrameCounter = 0;
@@ -27,19 +29,23 @@ namespace streams.cs
         public string Filename { get; set; }
 
         // Camera Settings
-        public struct CameraSettings {
+        public struct CameraSettings
+        {
             public int LaserPower { get; set; }
             public int FilterOption { get; set; }
             public int MotionRangeTradeoff { get; set; }
             public ushort DepthConfidence { get; set; }
         };
         public CameraSettings cameraSettings = new CameraSettings();
-       
-
-
 
         public event EventHandler<UpdateStatusEventArgs> UpdateStatus = null;
+        public event EventHandler<UpdateFPSLabelEventArgs> UpdateFPSLabel = null;
+        public FPSTimer timer = null;
 
+        public Manager()
+        {
+            timer = new FPSTimer(this);
+        }
 
         /*
          * Manage Session and SenseManager in central class
@@ -126,7 +132,7 @@ namespace streams.cs
 
         public RS.Status GetSample(out RS.Sample sample)
         {
-            RS.Status status; 
+            RS.Status status;
             sample = null;
             /* Wait until a frame is ready: Synchronized or Asynchronous 
              if no Response for 100 ms return */
@@ -135,7 +141,7 @@ namespace streams.cs
             {
                 /* Aquire Frame from Camera */
                 sample = SenseManager.Sample;
-                
+
             }
             return status;
         }
@@ -178,6 +184,28 @@ namespace streams.cs
         {
             liveFrameCounter++;
             FrameNumber = Live ? liveFrameCounter : SenseManager.CaptureManager.FrameIndex;
+        }
+
+        public void SetFPSLabel(String text)
+        {
+            EventHandler<UpdateFPSLabelEventArgs> handler = UpdateFPSLabel;
+            if (handler != null)
+            {
+                handler(this, new UpdateFPSLabelEventArgs(text));
+            }
+        }
+
+        public void CleanUpSession()
+        {
+            Session.Dispose();
+            SenseManager.Close();
+            SenseManager.Dispose();
+            Smoother.Dispose();
+        }
+
+        public void CreateDataSmoother()
+        {
+            Smoother = Smoother.CreateInstance(Session);
         }
     }
 }

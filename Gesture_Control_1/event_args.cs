@@ -28,4 +28,14 @@ namespace streams.cs
             this.image = image;
         }
     }
+
+    public class UpdateFPSLabelEventArgs : EventArgs
+    {
+        public String text { get; set; }
+
+        public UpdateFPSLabelEventArgs(String text)
+        {
+            this.text = text;
+        }
+    }
 }
