@@ -306,7 +306,7 @@
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel3.Size = new System.Drawing.Size(153, 27);
             this.tableLayoutPanel3.TabIndex = 10;
-            this.tableLayoutPanel3.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel3_Paint);
+           
             // 
             // radioIR
             // 
@@ -1266,7 +1266,7 @@
             this.label27.Size = new System.Drawing.Size(143, 13);
             this.label27.TabIndex = 1;
             this.label27.Text = "Confidence Status 1st Hand:";
-            this.label27.Click += new System.EventHandler(this.label27_Click);
+            
             // 
             // confidenceDistance
             // 

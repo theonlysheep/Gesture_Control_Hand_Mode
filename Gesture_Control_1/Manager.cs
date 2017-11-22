@@ -199,8 +199,7 @@ namespace streams.cs
         {
             Session.Dispose();
             SenseManager.Close();
-            SenseManager.Dispose();
-            Smoother.Dispose();
+            SenseManager.Dispose();            
         }
 
         public void CreateDataSmoother()

@@ -218,27 +218,28 @@ namespace streams.cs
 
         public void DrawCursor(int numOfHands, Point3DF32[] cursorPoints)
         {
-            if (form.resultBitmap == null) return;
+            if (form.ResultBitmap == null) return;
             if (cursorPoints == null) return;
 
             int scaleFactor = 1;
-            Draw.Graphics g = Draw.Graphics.FromImage(form.resultBitmap);
 
-            Draw.Color color = Draw.Color.White;
-            Draw.Pen pen = new Draw.Pen(color, PEN_SIZE);
-
-            for (int i = 0; i < numOfHands; ++i)
+            lock (form)
             {
-                float sz = 8;
+                Draw.Graphics graphic = Draw.Graphics.FromImage(form.ResultBitmap);
+                
+                Draw.Color color = Draw.Color.White;
+                Draw.Pen pen = new Draw.Pen(color, PEN_SIZE);
 
-                /// draw cursor
-                ///pen.Color = Draw.Color.Green;
-                //pen.Width = PEN_SIZE;
-                int x = (int)cursorPoints[i].x / scaleFactor;
-                int y = (int)cursorPoints[i].y / scaleFactor;
-                g.DrawEllipse(pen, x - sz / 2, y - sz / 2, sz, sz);
+                for (int i = 0; i < numOfHands; ++i)
+                {
+                    float sz = 8;
+
+                    int x = (int)cursorPoints[i].x / scaleFactor;
+                    int y = (int)cursorPoints[i].y / scaleFactor;
+                    graphic.DrawEllipse(pen, x - sz / 2, y - sz / 2, sz, sz);
+                }
+                pen.Dispose();
             }
-            pen.Dispose();
         }
 
         public void SetUpCursorModule()

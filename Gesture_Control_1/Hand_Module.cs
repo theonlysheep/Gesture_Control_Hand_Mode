@@ -489,38 +489,45 @@ namespace streams.cs
 
         public void DrawExtremities(int numOfHands, ExtremityData[][] extremitites = null)
         {
-            if (form.resultBitmap == null) return;
+            if (form.ResultBitmap == null) return;
             if (extremitites == null) return;
 
             int scaleFactor = 1;
-            Draw.Graphics g = Draw.Graphics.FromImage(form.resultBitmap);
 
-            float sz = 8;
-
-            Draw.Pen pen = new Draw.Pen(Draw.Color.Red, PEN_SIZE);
-            for (int i = 0; i < numOfHands; ++i)
+            lock (form)
             {
-                for (int j = 0; j < HandData.NUMBER_OF_EXTREMITIES; ++j)
+                Draw.Graphics graphic = null;
+
+                graphic = Draw.Graphics.FromImage(form.ResultBitmap);
+
+
+                float ellipseSize = 8;
+
+                Draw.Pen pen = new Draw.Pen(Draw.Color.Red, PEN_SIZE);
+                for (int i = 0; i < numOfHands; ++i)
                 {
-                    int x = (int)extremitites[i][j].pointImage.x / scaleFactor;
-                    int y = (int)extremitites[i][j].pointImage.y / scaleFactor;
-                    g.DrawEllipse(pen, x - sz / 2, y - sz / 2, sz, sz);
+                    for (int j = 0; j < HandData.NUMBER_OF_EXTREMITIES; ++j)
+                    {
+                        int x = (int)extremitites[i][j].pointImage.x / scaleFactor;
+                        int y = (int)extremitites[i][j].pointImage.y / scaleFactor;
+                        graphic.DrawEllipse(pen, x - ellipseSize / 2, y - ellipseSize / 2, ellipseSize, ellipseSize);
+                    }
                 }
+                pen.Dispose();
             }
-            pen.Dispose();
         }
 
         public void DrawJoints(JointData[][] nodes, int numOfHands)
         {
-            if (form.resultBitmap == null) return;
+            if (form.ResultBitmap == null) return;
             if (nodes == null) return;
 
-
-            lock (this)
+            lock (form)
             {
                 int scaleFactor = 1;
+                Draw.Graphics graphic = null;
 
-                Draw.Graphics g = Draw.Graphics.FromImage(form.resultBitmap);
+                graphic = Draw.Graphics.FromImage(form.ResultBitmap);
 
                 using (Draw.Pen boneColor = new Draw.Pen(Draw.Color.DodgerBlue, PEN_SIZE))
                 {
@@ -549,11 +556,10 @@ namespace streams.cs
                                 baseY = wristY;
                             }
 
-                            g.DrawLine(boneColor, new Draw.Point(baseX, baseY), new Draw.Point(x, y));
+                            graphic.DrawLine(boneColor, new Draw.Point(baseX, baseY), new Draw.Point(x, y));
                             baseX = x;
                             baseY = y;
                         }
-
 
                         // Display Joints 
                         using (
@@ -569,7 +575,7 @@ namespace streams.cs
 
                             for (int j = 0; j < HandData.NUMBER_OF_JOINTS; j++)
                             {
-                                float sz = 4;
+                                float ellipseSize = 4;
 
                                 int x = (int)nodes[i][j].positionImage.x / scaleFactor;
                                 int y = (int)nodes[i][j].positionImage.y / scaleFactor;
@@ -586,7 +592,7 @@ namespace streams.cs
                                 if (j == 1)
                                 {
                                     currnetPen = red;
-                                    sz += 4;
+                                    ellipseSize += 4;
                                 }
 
                                 //Thumb
@@ -618,16 +624,16 @@ namespace streams.cs
 
                                 if (j == 5 || j == 9 || j == 13 || j == 17 || j == 21)
                                 {
-                                    sz += 4;
+                                    ellipseSize += 4;
                                 }
 
-                                g.DrawEllipse(currnetPen, x - sz / 2, y - sz / 2, sz, sz);
+                                graphic.DrawEllipse(currnetPen, x - ellipseSize / 2, y - ellipseSize / 2, ellipseSize, ellipseSize);
                             }
                         }
                     }
 
                 }
-                g.Dispose();
+                graphic.Dispose();
             }
 
         }
