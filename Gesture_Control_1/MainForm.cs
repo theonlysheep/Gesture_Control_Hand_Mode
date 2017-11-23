@@ -43,7 +43,7 @@ namespace streams.cs
 
 
         // Drawing Parameters 
-        public Bitmap ResultBitmap { get; set; } = null;
+        public Bitmap resultBitmap = null;
 
         System.Threading.Thread thread1;
 
@@ -173,7 +173,7 @@ namespace streams.cs
         private void buttonStart_Click(object sender, EventArgs e)
         {
             // Configure UI            
-            //ResultBitmap = new Bitmap(depthImage.Width, depthImage.Height, PixelFormat.Format32bppArgb);
+            resultBitmap = new Bitmap(depthImage.Width, depthImage.Height, PixelFormat.Format32bppArgb);
             menuStrip.Enabled = false;
             buttonStart.Enabled = false;
             buttonStop.Enabled = true;
@@ -224,21 +224,35 @@ namespace streams.cs
                     frameStatus = manager.GetSample(out sample);
                     if (frameStatus == RS.Status.STATUS_EXEC_TIMEOUT || frameStatus == RS.Status.STATUS_DEVICE_LOST)
                     {
-                        manager.SetStatus("Camera Error! Timeout or Device lost.");
+                        manager.SetStatus("Camera Error! Timeout while Acquiering Frame.");
                         manager.Stop = true;
-                        return;
+                        
                     }
-                    manager.IncrementFrameNumber();
-                    if (sample != null)
+                    if (frameStatus == RS.Status.STATUS_DEVICE_LOST)
                     {
-                        handsRecognition.RecogniseHands(sample);
-                        cursorRecognition.RecogniseCursor(sample);
-                        confidenceStatus = confidenceCalculation.CalculateConfidence(handsRecognition.HandData, cursorRecognition.CursorData);
+                        manager.SetStatus("Camera Error! Device lost.");
+                        manager.Stop = true;
+                       
+                    }
 
-                        streams.RenderStreams(sample); // After Hands Recognition Since Hands recognition takes longer 
-                        DelayPicture(sample.Depth);
-                        UpdateResultImage();
+                    if (sample != null && !manager.Stop)
+                    {
+                        manager.IncrementFrameNumber();
+                        Bitmap handBitmap = handsRecognition.RecogniseHands(sample);                        
+                        Bitmap cursorBitmap = cursorRecognition.RecogniseCursor(sample);
+                        Bitmap backgroundBitmap = DelayPicture(sample.Depth);
+                        Bitmap mergedBitmap = MergedBitmaps(handBitmap, cursorBitmap,backgroundBitmap);
+                        WriteResultImage(mergedBitmap);
+                        UpdateResultPanel();
+
+                        confidenceStatus = confidenceCalculation.CalculateConfidence(handsRecognition.HandData, cursorRecognition.CursorData);
+                        streams.RenderStreams(sample); // After Hands Recognition Since Hands recognition takes longer                         
+                        
                         manager.SenseManager.ReleaseFrame();
+                        handBitmap.Dispose();
+                        cursorBitmap.Dispose();
+                        backgroundBitmap.Dispose();
+                        mergedBitmap.Dispose();                         
                         manager.timer.Tick();
                     }
                 }
@@ -406,7 +420,7 @@ namespace streams.cs
             }), new object[] { status, color });
         }
 
-        private Bitmap ConvertBitmap(RS.Image image)
+        public Bitmap ConvertBitmap(RS.Image image)
         {
             RS.ImageData imageData;
             Bitmap bitmap;
@@ -421,28 +435,50 @@ namespace streams.cs
 
 
         /* Delay Depth/Mask Images - for depth image only we use a delay of NumberOfFramesToDelay to syncf image with tracking */
-        private void DelayPicture(RS.Image image)
+        private Bitmap DelayPicture(RS.Image image)
         {
-            lock (this)
+
+            if (image == null)
+                return null;
+
+            Bitmap tempBitmap = ConvertBitmap(image);
+            
+            if (tempBitmap != null)
             {
-                if (image == null)
-                    return;
-
-                Bitmap tempBitmap = ConvertBitmap(image);
-                if (tempBitmap != null)
-                {
-                    bitmapQueue.Enqueue(tempBitmap);
-                }
-
-                if (bitmapQueue.Count == NumberOfFramesToDelay)
-                {
-
-                    tempBitmap = bitmapQueue.Dequeue(); //Take oldest Picture
-                    ShowResultImage(tempBitmap);                    
-                }
+                bitmapQueue.Enqueue((Bitmap)tempBitmap.Clone());
             }
+
+            if (bitmapQueue.Count == NumberOfFramesToDelay)
+            {
+                tempBitmap = bitmapQueue.Dequeue(); //Take oldest Picture
+                                                      //ShowResultImage(tempBitmap);
+            }
+            return tempBitmap;
+            
         }
-        
+
+       
+        private Bitmap MergedBitmaps(Bitmap b1, Bitmap b2, Bitmap b3)
+        {
+            Bitmap bmp1 = (Bitmap)b1.Clone(); 
+            Bitmap bmp2 = (Bitmap)b2.Clone();
+            Bitmap bmp3 = (Bitmap)b3.Clone();
+
+            if (bmp1 != null && bmp2 != null && bmp3 != null)
+            {
+                Bitmap result = new Bitmap(Math.Max(bmp1.Width, Math.Max(bmp2.Width, bmp3.Width)),
+                                           Math.Max(bmp1.Height, Math.Max(bmp2.Height, bmp3.Height)));
+                using (Graphics g = Graphics.FromImage(result))
+                {
+                    g.DrawImage(bmp3, Point.Empty);
+                    g.DrawImage(bmp2, Point.Empty);
+                    g.DrawImage(bmp1, Point.Empty);
+                }
+                return result;
+            }
+            else return null;
+        }
+
         public List<string> GetSelectedGestures()
         {
             List<string> activatedGestures = new List<string>();
@@ -489,7 +525,7 @@ namespace streams.cs
             }), new object[] { });
 
         }
-        
+
         private void PopulateGestureList()
         {
             if (handsRecognition.HandConfiguration != null)
@@ -516,8 +552,6 @@ namespace streams.cs
             }
         }
         
-        
-
         #region Playback / Recording
         /*
          * Playback Mode Stuff 
@@ -749,7 +783,7 @@ namespace streams.cs
 
             }), new object[] { status });
         }
-        
+
         private delegate void DisplayConfidenceStatusDelegate(bool status);
         public void DisplayConfidenceStatus(bool status)
         {
@@ -765,7 +799,7 @@ namespace streams.cs
         }
 
         private delegate void UpdateResultImageDelegate();
-        public void UpdateResultImage()
+        public void UpdateResultPanel()
         {
 
             resultImage.Invoke(new UpdateResultImageDelegate(delegate ()
@@ -775,54 +809,60 @@ namespace streams.cs
 
         }
 
-        private void ShowResultImage(Bitmap bitmap)
+        private void WriteResultImage(Bitmap bitmap)
         {
-            lock (this)
+            if (bitmap != null)
             {
-                if (ResultBitmap != null)
-                    ResultBitmap.Dispose();
-                ResultBitmap = new Bitmap(bitmap);
+                lock (resultBitmap)
+                {
+                    if (resultBitmap != null)
+                        resultBitmap.Dispose();
+                    resultBitmap = new Bitmap(bitmap);
+                }
             }
         }
 
         private void ResultPanel_Paint(object sender, PaintEventArgs e)
         {
-            lock (this)
+            if (resultBitmap != null)
             {
-                if (ResultBitmap == null || ResultBitmap.Width == 0 || ResultBitmap.Height == 0) return;
 
-                Bitmap bitmapNew = new Bitmap(ResultBitmap);
-                try
+                lock (resultBitmap)
                 {
-                    /* Keep the aspect ratio */
-                    Rectangle rc = (sender as PictureBox).ClientRectangle;
-                    float xscale = (float)rc.Width / (float)ResultBitmap.Width;
-                    float yscale = (float)rc.Height / (float)ResultBitmap.Height;
-                    float xyscale = (xscale < yscale) ? xscale : yscale;
-                    int width = (int)(ResultBitmap.Width * xyscale);
-                    int height = (int)(ResultBitmap.Height * xyscale);
-                    rc.X = (rc.Width - width) / 2;
-                    rc.Y = (rc.Height - height) / 2;
-                    rc.Width = width;
-                    rc.Height = height;
-                    e.Graphics.DrawImage(bitmapNew, rc);
-                }
-                finally
-                {
-                    bitmapNew.Dispose();
+                    if (resultBitmap == null || resultBitmap.Width == 0 || resultBitmap.Height == 0) return;
+
+                    Bitmap bitmapNew = new Bitmap(resultBitmap);
+                    try
+                    {
+                        /* Keep the aspect ratio */
+                        Rectangle rc = (sender as PictureBox).ClientRectangle;
+                        float xscale = (float)rc.Width / (float)resultBitmap.Width;
+                        float yscale = (float)rc.Height / (float)resultBitmap.Height;
+                        float xyscale = (xscale < yscale) ? xscale : yscale;
+                        int width = (int)(resultBitmap.Width * xyscale);
+                        int height = (int)(resultBitmap.Height * xyscale);
+                        rc.X = (rc.Width - width) / 2;
+                        rc.Y = (rc.Height - height) / 2;
+                        rc.Width = width;
+                        rc.Height = height;
+                        e.Graphics.DrawImage(bitmapNew, rc);
+                    }
+                    finally
+                    {
+                        bitmapNew.Dispose();
+                    }
                 }
             }
         }
         #endregion
-
-       
+        
         private void SetLabelUpdateTimer()
         {
             updateLabelTimer.Elapsed += UpdateLabelTimer_Elapsed;
             updateLabelTimer.Interval = 200;
             updateLabelTimer.Enabled = true;
         }
-        
+
         private void CleanUpPipeline()
         {
             manager.Smoother.Dispose();

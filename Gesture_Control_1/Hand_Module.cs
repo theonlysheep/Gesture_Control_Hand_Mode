@@ -16,7 +16,7 @@ namespace streams.cs
         private AlertData previousAlertData = null;
         private GestureData previousGestureData = null;
         private const float PEN_SIZE = 3.0f;
-
+        private Draw.Bitmap handModuleBitmap = null;
 
 
         public List<string> ActivatedGestures { get; set; }
@@ -64,6 +64,7 @@ namespace streams.cs
         {
             manager = mngr;
             form = frm;
+            
         }
 
         #region Events 
@@ -137,8 +138,10 @@ namespace streams.cs
         #endregion
 
         /* Using SenseManager to handle data */
-        public void RecogniseHands(Sample sample)
+        public Draw.Bitmap RecogniseHands(Sample sample)
         {
+            handModuleBitmap = new Draw.Bitmap(sample.Depth.Info.width, sample.Depth.Info.height, Draw.Imaging.PixelFormat.Format32bppArgb);
+            //handModuleBitmap = new Draw.Bitmap(form.ConvertBitmap(sample.Depth)); //Get Size of Original Image
             if (sample != null && sample.Depth != null)
             {
                 if (HandData != null)
@@ -162,6 +165,7 @@ namespace streams.cs
                     }
                 }
             }
+            return handModuleBitmap;
         }
 
         public void RegisterHandEvents()
@@ -489,16 +493,16 @@ namespace streams.cs
 
         public void DrawExtremities(int numOfHands, ExtremityData[][] extremitites = null)
         {
-            if (form.ResultBitmap == null) return;
+            if (handModuleBitmap == null) return;
             if (extremitites == null) return;
 
             int scaleFactor = 1;
 
-            lock (form)
+            lock (handModuleBitmap)
             {
                 Draw.Graphics graphic = null;
 
-                graphic = Draw.Graphics.FromImage(form.ResultBitmap);
+                graphic = Draw.Graphics.FromImage(handModuleBitmap);
 
 
                 float ellipseSize = 8;
@@ -519,15 +523,15 @@ namespace streams.cs
 
         public void DrawJoints(JointData[][] nodes, int numOfHands)
         {
-            if (form.ResultBitmap == null) return;
+            if (handModuleBitmap == null) return;
             if (nodes == null) return;
 
-            lock (form)
+            lock (handModuleBitmap)
             {
                 int scaleFactor = 1;
                 Draw.Graphics graphic = null;
 
-                graphic = Draw.Graphics.FromImage(form.ResultBitmap);
+                graphic = Draw.Graphics.FromImage(handModuleBitmap);
 
                 using (Draw.Pen boneColor = new Draw.Pen(Draw.Color.DodgerBlue, PEN_SIZE))
                 {

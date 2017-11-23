@@ -22,7 +22,7 @@ namespace streams.cs
         private Manager manager;
         private const float PEN_SIZE = 8.0f;
         private MainForm form = null;
-
+        private Draw.Bitmap cursorModuleBitmap = null;
 
         public CursorModuleRecognition(Manager mngr, MainForm frm)
         {
@@ -138,8 +138,10 @@ namespace streams.cs
         }
 
         /* Using SenseManager to handle data */
-        public void RecogniseCursor(Sample sample)
+        public Draw.Bitmap RecogniseCursor(Sample sample)
         {
+            cursorModuleBitmap = new Draw.Bitmap(sample.Depth.Info.width, sample.Depth.Info.height, Draw.Imaging.PixelFormat.Format32bppArgb); //Get Size of Original Image
+
             //form.UpdateGestureInfo(String.Empty, System.Drawing.Color.Black);
             if (sample != null && sample.Depth != null)
             {
@@ -150,6 +152,7 @@ namespace streams.cs
                     DisplayCursor();
                 }               
             }
+            return cursorModuleBitmap;
         }
 
         //public void RegisterCursorEvents()
@@ -218,14 +221,14 @@ namespace streams.cs
 
         public void DrawCursor(int numOfHands, Point3DF32[] cursorPoints)
         {
-            if (form.ResultBitmap == null) return;
+            if (cursorModuleBitmap == null) return;
             if (cursorPoints == null) return;
 
             int scaleFactor = 1;
 
-            lock (form)
+            lock (cursorModuleBitmap)
             {
-                Draw.Graphics graphic = Draw.Graphics.FromImage(form.ResultBitmap);
+                Draw.Graphics graphic = Draw.Graphics.FromImage(cursorModuleBitmap);
                 
                 Draw.Color color = Draw.Color.White;
                 Draw.Pen pen = new Draw.Pen(color, PEN_SIZE);
