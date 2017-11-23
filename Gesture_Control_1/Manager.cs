@@ -136,7 +136,7 @@ namespace streams.cs
             sample = null;
             /* Wait until a frame is ready: Synchronized or Asynchronous 
              if no Response for 100 ms return */
-            status = SenseManager.AcquireFrame(true, 500);
+            status = SenseManager.AcquireFrame(true, 1000);
             if (status == RS.Status.STATUS_NO_ERROR)
             {
                 /* Aquire Frame from Camera */

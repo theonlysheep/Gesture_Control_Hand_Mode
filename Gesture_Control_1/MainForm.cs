@@ -241,7 +241,7 @@ namespace streams.cs
                         Bitmap handBitmap = handsRecognition.RecogniseHands(sample);                        
                         Bitmap cursorBitmap = cursorRecognition.RecogniseCursor(sample);
                         Bitmap backgroundBitmap = DelayPicture(sample.Depth);
-                        Bitmap mergedBitmap = MergedBitmaps(handBitmap, cursorBitmap,backgroundBitmap);
+                        Bitmap mergedBitmap = MergedBitmaps(handBitmap, cursorBitmap, cursorBitmap);
                         WriteResultImage(mergedBitmap);
                         UpdateResultPanel();
 
@@ -470,9 +470,10 @@ namespace streams.cs
                                            Math.Max(bmp1.Height, Math.Max(bmp2.Height, bmp3.Height)));
                 using (Graphics g = Graphics.FromImage(result))
                 {
+                    g.DrawImage(bmp1, Point.Empty);
                     g.DrawImage(bmp3, Point.Empty);
                     g.DrawImage(bmp2, Point.Empty);
-                    g.DrawImage(bmp1, Point.Empty);
+                    
                 }
                 return result;
             }
